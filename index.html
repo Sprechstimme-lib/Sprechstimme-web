@@ -7,10 +7,9 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- Animated background -->
+    <div class="scroll-progress"></div>
     <canvas id="waveform-bg"></canvas>
 
-    <!-- Navigation -->
     <nav class="navbar">
         <div class="nav-content">
             <div class="logo">Sprechstimme</div>
@@ -19,12 +18,11 @@
                 <a href="#features" class="nav-link">Features</a>
                 <a href="#docs" class="nav-link">Documentation</a>
                 <a href="#examples" class="nav-link">Examples</a>
-                <a href="https://github.com/breatn/Sprechstimme" class="nav-link" target="_blank">GitHub</a>
+                <a href="https://github.com/Sprechstimme-lib/Sprechstimme" class="nav-link" target="_blank">GitHub</a>
             </div>
         </div>
     </nav>
 
-    <!-- Hero Section -->
     <section id="home" class="hero">
         <div class="hero-content">
             <div class="badge">
@@ -51,7 +49,7 @@
                     </svg>
                     Get Started
                 </a>
-                <a href="https://github.com/breatn/Sprechstimme" class="btn btn-secondary" target="_blank">
+                <a href="https://github.com/Sprechstimme-lib/Sprechstimme" class="btn btn-secondary" target="_blank">
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                         <path fill-rule="evenodd" clip-rule="evenodd" d="M10 0C4.477 0 0 4.477 0 10c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.463-1.11-1.463-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0110 4.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C17.137 18.163 20 14.418 20 10c0-5.523-4.477-10-10-10z" fill="currentColor"/>
                     </svg>
@@ -65,8 +63,7 @@
                 </a>
             </div>
 
-            <!-- Quick Install -->
-            <div class="quick-install">
+            <div id="install" class="quick-install">
                 <div class="install-header">
                     <span>Quick Install</span>
                     <button class="copy-btn" data-copy="pip install sprechstimme">Copy</button>
@@ -79,7 +76,6 @@
         </div>
     </section>
 
-    <!-- Features Section -->
     <section id="features" class="features">
         <div class="container">
             <h2 class="section-title">Features</h2>
@@ -118,7 +114,6 @@
         </div>
     </section>
 
-    <!-- Interactive Demo Section -->
     <section id="demo" class="demo-section">
         <div class="container">
             <h2 class="section-title">Interactive Demo</h2>
@@ -151,626 +146,638 @@
         </div>
     </section>
 
-    <!-- Documentation Section -->
     <section id="docs" class="docs-section">
-        <div class="container-wide">
-            <div class="docs-layout">
-                <!-- Sidebar -->
-                <aside class="docs-sidebar">
-                    <h3>API Reference</h3>
-                    <nav class="docs-nav">
-                        <div class="nav-group">
-                            <button class="nav-group-title active" data-section="core">
-                                <span class="chevron">▼</span>
-                                Core Functions
-                            </button>
-                            <div class="nav-group-content">
-                                <a href="#new" class="doc-link">new(name)</a>
-                                <a href="#create" class="doc-link">create(name, ...)</a>
-                                <a href="#play" class="doc-link">play(name, notes, ...)</a>
-                                <a href="#get" class="doc-link">get(name)</a>
-                            </div>
+        <div class="docs-layout">
+            <aside class="docs-sidebar">
+                <h3>API Reference</h3>
+                <nav class="docs-nav">
+                    <div class="nav-group">
+                        <button class="nav-group-title active">
+                            <span class="chevron">▶</span>
+                            Core Functions
+                        </button>
+                        <div class="nav-group-content show">
+                            <a href="#new" class="doc-link">new(name)</a>
+                            <a href="#create" class="doc-link">create(name, ...)</a>
+                            <a href="#play" class="doc-link">play(name, notes, ...)</a>
+                            <a href="#get" class="doc-link">get(name)</a>
                         </div>
-                        <div class="nav-group">
-                            <button class="nav-group-title" data-section="utility">
-                                <span class="chevron">▶</span>
-                                Utility Functions
-                            </button>
-                            <div class="nav-group-content hidden">
-                                <a href="#midi-to-freq" class="doc-link">midi_to_freq()</a>
-                                <a href="#note-to-freq" class="doc-link">note_to_freq()</a>
-                            </div>
-                        </div>
-                        <div class="nav-group">
-                            <button class="nav-group-title" data-section="track">
-                                <span class="chevron">▶</span>
-                                Track Class
-                            </button>
-                            <div class="nav-group-content hidden">
-                                <a href="#track-init" class="doc-link">Track(bpm, ...)</a>
-                                <a href="#track-add" class="doc-link">Track.add()</a>
-                                <a href="#track-addchord" class="doc-link">Track.addChord()</a>
-                                <a href="#track-play" class="doc-link">Track.play()</a>
-                                <a href="#track-export" class="doc-link">Track.export()</a>
-                            </div>
-                        </div>
-                        <div class="nav-group">
-                            <button class="nav-group-title" data-section="song">
-                                <span class="chevron">▶</span>
-                                Song Class
-                            </button>
-                            <div class="nav-group-content hidden">
-                                <a href="#song-init" class="doc-link">Song(bpm, ...)</a>
-                                <a href="#song-add" class="doc-link">Song.add()</a>
-                                <a href="#song-addchord" class="doc-link">Song.add_chord()</a>
-                                <a href="#song-play" class="doc-link">Song.play()</a>
-                                <a href="#song-export" class="doc-link">Song.export()</a>
-                                <a href="#song-duration" class="doc-link">Song.get_duration()</a>
-                                <a href="#song-list" class="doc-link">Song.list_tracks()</a>
-                            </div>
-                        </div>
-                        <div class="nav-group">
-                            <button class="nav-group-title" data-section="waveform">
-                                <span class="chevron">▶</span>
-                                Waveform Generators
-                            </button>
-                            <div class="nav-group-content hidden">
-                                <a href="#waves" class="doc-link">sp.waves.sine</a>
-                                <a href="#waves" class="doc-link">sp.waves.square</a>
-                                <a href="#waves" class="doc-link">sp.waves.sawtooth</a>
-                                <a href="#waves" class="doc-link">sp.waves.triangle</a>
-                                <a href="#waves" class="doc-link">sp.waves.noise</a>
-                                <a href="#custom-wave" class="doc-link">Custom Functions</a>
-                            </div>
-                        </div>
-                        <div class="nav-group">
-                            <button class="nav-group-title" data-section="filters">
-                                <span class="chevron">▶</span>
-                                Filters
-                            </button>
-                            <div class="nav-group-content hidden">
-                                <a href="#lowpass" class="doc-link">low_pass()</a>
-                                <a href="#highpass" class="doc-link">high_pass()</a>
-                                <a href="#bandpass" class="doc-link">band_pass()</a>
-                                <a href="#echo" class="doc-link">echo()</a>
-                                <a href="#distortion" class="doc-link">simple_distortion()</a>
-                                <a href="#custom-filter" class="doc-link">Custom Filters</a>
-                            </div>
-                        </div>
-                    </nav>
-                </aside>
-
-                <!-- Main Documentation Content -->
-                <main class="docs-content">
-                    <div class="doc-header">
-                        <h2>Complete Sprechstimme Documentation</h2>
-                        <p>Complete API reference for the Sprechstimme library</p>
                     </div>
+                    <div class="nav-group">
+                        <button class="nav-group-title">
+                            <span class="chevron">▶</span>
+                            Utility Functions
+                        </button>
+                        <div class="nav-group-content">
+                            <a href="#midi-to-freq" class="doc-link">midi_to_freq()</a>
+                            <a href="#note-to-freq" class="doc-link">note_to_freq()</a>
+                        </div>
+                    </div>
+                    <div class="nav-group">
+                        <button class="nav-group-title">
+                            <span class="chevron">▶</span>
+                            Track Class
+                        </button>
+                        <div class="nav-group-content">
+                            <a href="#track-init" class="doc-link">Track(bpm, ...)</a>
+                            <a href="#track-add" class="doc-link">Track.add()</a>
+                            <a href="#track-addchord" class="doc-link">Track.addChord()</a>
+                            <a href="#track-play" class="doc-link">Track.play()</a>
+                            <a href="#track-export" class="doc-link">Track.export()</a>
+                        </div>
+                    </div>
+                    <div class="nav-group">
+                        <button class="nav-group-title">
+                            <span class="chevron">▶</span>
+                            Song Class
+                        </button>
+                        <div class="nav-group-content">
+                            <a href="#song-init" class="doc-link">Song(bpm, ...)</a>
+                            <a href="#song-add" class="doc-link">Song.add()</a>
+                            <a href="#song-addchord" class="doc-link">Song.add_chord()</a>
+                            <a href="#song-play" class="doc-link">Song.play()</a>
+                            <a href="#song-export" class="doc-link">Song.export()</a>
+                            <a href="#song-duration" class="doc-link">Song.get_duration()</a>
+                            <a href="#song-list" class="doc-link">Song.list_tracks()</a>
+                        </div>
+                    </div>
+                    <div class="nav-group">
+                        <button class="nav-group-title">
+                            <span class="chevron">▶</span>
+                            Waveforms
+                        </button>
+                        <div class="nav-group-content">
+                            <a href="#waves" class="doc-link">Built-in Waves</a>
+                            <a href="#custom-wave" class="doc-link">Custom Waveforms</a>
+                        </div>
+                    </div>
+                    <div class="nav-group">
+                        <button class="nav-group-title">
+                            <span class="chevron">▶</span>
+                            Filters
+                        </button>
+                        <div class="nav-group-content">
+                            <a href="#lowpass" class="doc-link">low_pass()</a>
+                            <a href="#highpass" class="doc-link">high_pass()</a>
+                            <a href="#bandpass" class="doc-link">band_pass()</a>
+                            <a href="#echo" class="doc-link">echo()</a>
+                            <a href="#distortion" class="doc-link">simple_distortion()</a>
+                            <a href="#filter-helpers" class="doc-link">Filter Helpers</a>
+                            <a href="#custom-filter" class="doc-link">Custom Filters</a>
+                        </div>
+                    </div>
+                </nav>
+            </aside>
 
-                    <!-- Core Functions -->
-                    <div class="doc-section" id="core-section">
-                        <h3 class="doc-section-title">Core Functions</h3>
+            <main class="docs-content">
+                <div class="doc-header">
+                    <h2>Complete Sprechstimme Documentation</h2>
+                    <p>Complete API reference for the Sprechstimme library</p>
+                </div>
 
-                        <div class="api-item" id="new">
-                            <h4><code>new(name)</code></h4>
-                            <p class="description">Register a new synthesizer with default settings.</p>
-                            <div class="param-section">
-                                <h5>Parameters:</h5>
-                                <ul>
-                                    <li><code>name</code> (str): Name identifier for the synth</li>
-                                </ul>
+                <div class="doc-section">
+                    <h3 class="doc-section-title">Core Functions</h3>
+
+                    <div class="api-item" id="new">
+                        <h4><code>new(name)</code></h4>
+                        <p class="description">Register a new synthesizer with default settings.</p>
+                        <div class="param-section">
+                            <h5>Parameters:</h5>
+                            <ul>
+                                <li><code>name</code> (str): Name identifier for the synth</li>
+                            </ul>
+                        </div>
+                        <div class="code-example">
+                            <div class="code-header">
+                                <span>Python</span>
+                                <button class="copy-btn" data-copy="import sprechstimme as sp&#10;&#10;sp.new('lead')">Copy</button>
                             </div>
-                            <div class="code-example">
-                                <div class="code-header">
-                                    <span>Python</span>
-                                    <button class="copy-btn" data-copy="import sprechstimme as sp&#10;&#10;sp.new('lead')">Copy</button>
-                                </div>
-                                <pre><code><span class="keyword">import</span> sprechstimme <span class="keyword">as</span> sp
+                            <pre><code><span class="keyword">import</span> sprechstimme <span class="keyword">as</span> sp
 
 sp.new(<span class="string">'lead'</span>)</code></pre>
-                            </div>
                         </div>
+                    </div>
 
-                        <div class="api-item" id="create">
-                            <h4><code>create(name, wavetype=None, filters=None, envelope=None, poly=True)</code></h4>
-                            <p class="description">Configure a synthesizer with specific parameters including waveforms, filters, ADSR envelope, and polyphony.</p>
-                            <div class="param-section">
-                                <h5>Parameters:</h5>
-                                <ul>
-                                    <li><code>name</code> (str): Name of the synth to configure</li>
-                                    <li><code>wavetype</code> (callable or str, optional): Waveform generator function or preset ("sine", "square", "sawtooth", "triangle", "noise") or custom function</li>
-                                    <li><code>filters</code> (list, optional): List of filter functions (use functools.partial for parameters)</li>
-                                    <li><code>envelope</code> (dict, optional): ADSR envelope {"attack": float, "decay": float, "sustain": float, "release": float}</li>
-                                    <li><code>poly</code> (bool, optional): Enable polyphony. Default: True</li>
-                                </ul>
+                    <div class="api-item" id="create">
+                        <h4><code>create(name, wavetype=None, filters=None, envelope=None, poly=True)</code></h4>
+                        <p class="description">Configure a synthesizer with specific parameters including waveforms, filters, ADSR envelope, and polyphony.</p>
+                        <div class="param-section">
+                            <h5>Parameters:</h5>
+                            <ul>
+                                <li><code>name</code> (str): Name of the synth to configure</li>
+                                <li><code>wavetype</code> (callable or str, optional): Waveform generator function or preset ("sine", "square", "sawtooth", "triangle", "noise") or custom function</li>
+                                <li><code>filters</code> (list, optional): List of filter functions (use functools.partial for parameters)</li>
+                                <li><code>envelope</code> (dict, optional): ADSR envelope {"attack": float, "decay": float, "sustain": float, "release": float}</li>
+                                <li><code>poly</code> (bool, optional): Enable polyphony. Default: True</li>
+                            </ul>
+                        </div>
+                        <div class="code-example">
+                            <div class="code-header">
+                                <span>Python</span>
+                                <button class="copy-btn" data-copy="from functools import partial&#10;&#10;sp.create('bass',&#10;    wavetype=sp.waves.sawtooth,&#10;    filters=[partial(sp.filters.low_pass, cutoff=800)],&#10;    envelope={'attack': 0.01, 'decay': 0.1, 'sustain': 0.7, 'release': 0.2}&#10;)">Copy</button>
                             </div>
-                            <div class="code-example">
-                                <div class="code-header">
-                                    <span>Python</span>
-                                    <button class="copy-btn" data-copy="from functools import partial&#10;&#10;sp.create('bass',&#10;    wavetype=sp.waves.sawtooth,&#10;    filters=[partial(sp.filters.low_pass, cutoff=800)],&#10;    envelope={'attack': 0.01, 'decay': 0.1, 'sustain': 0.7, 'release': 0.2}&#10;)">Copy</button>
-                                </div>
-                                <pre><code><span class="keyword">from</span> functools <span class="keyword">import</span> partial
+                            <pre><code><span class="keyword">from</span> functools <span class="keyword">import</span> partial
 
 sp.create(<span class="string">'bass'</span>,
     wavetype=sp.waves.sawtooth,
     filters=[partial(sp.filters.low_pass, cutoff=<span class="number">800</span>)],
     envelope={<span class="string">'attack'</span>: <span class="number">0.01</span>, <span class="string">'decay'</span>: <span class="number">0.1</span>, <span class="string">'sustain'</span>: <span class="number">0.7</span>, <span class="string">'release'</span>: <span class="number">0.2</span>}
 )</code></pre>
-                            </div>
                         </div>
+                    </div>
 
-                        <div class="api-item" id="play">
-                            <h4><code>play(name, notes, duration=0.5, sample_rate=44100)</code></h4>
-                            <p class="description">Play notes on a synthesizer. Accepts MIDI numbers, frequencies (Hz), note names ("C4"), or lists for chords.</p>
-                            <div class="param-section">
-                                <h5>Parameters:</h5>
-                                <ul>
-                                    <li><code>name</code> (str): Synth name</li>
-                                    <li><code>notes</code> (int/float/str/list): Single note, list of notes (chord), or list of (note, duration) tuples (sequence)</li>
-                                    <li><code>duration</code> (float, optional): Duration in seconds. Default: 0.5</li>
-                                    <li><code>sample_rate</code> (int, optional): Sample rate in Hz. Default: 44100</li>
-                                </ul>
+                    <div class="api-item" id="play">
+                        <h4><code>play(name, notes, duration=0.5, sample_rate=44100)</code></h4>
+                        <p class="description">Play notes on a synthesizer. Accepts MIDI numbers, frequencies (Hz), note names ("C4"), or lists for chords.</p>
+                        <div class="param-section">
+                            <h5>Parameters:</h5>
+                            <ul>
+                                <li><code>name</code> (str): Synth name</li>
+                                <li><code>notes</code> (int/float/str/list): Single note, list of notes (chord), or list of (note, duration) tuples (sequence)</li>
+                                <li><code>duration</code> (float, optional): Duration in seconds. Default: 0.5</li>
+                                <li><code>sample_rate</code> (int, optional): Sample rate in Hz. Default: 44100</li>
+                            </ul>
+                        </div>
+                        <div class="code-example">
+                            <div class="code-header">
+                                <span>Python</span>
+                                <button class="copy-btn" data-copy="# Single note&#10;sp.play('lead', 'C4', duration=0.5)&#10;&#10;# Chord&#10;sp.play('lead', [60, 64, 67], duration=1.0)&#10;&#10;# MIDI number&#10;sp.play('lead', 60, duration=0.5)&#10;&#10;# Frequency in Hz&#10;sp.play('lead', 440.0, duration=0.5)">Copy</button>
                             </div>
-                            <div class="code-example">
-                                <div class="code-header">
-                                    <span>Python</span>
-                                    <button class="copy-btn" data-copy="# Single note&#10;sp.play('lead', 'C4', duration=0.5)&#10;&#10;# Chord&#10;sp.play('lead', [60, 64, 67], duration=1.0)&#10;&#10;# MIDI number&#10;sp.play('lead', 60, duration=0.5)">Copy</button>
-                                </div>
-                                <pre><code><span class="comment"># Single note</span>
+                            <pre><code><span class="comment"># Single note</span>
 sp.play(<span class="string">'lead'</span>, <span class="string">'C4'</span>, duration=<span class="number">0.5</span>)
 
 <span class="comment"># Chord</span>
 sp.play(<span class="string">'lead'</span>, [<span class="number">60</span>, <span class="number">64</span>, <span class="number">67</span>], duration=<span class="number">1.0</span>)
 
 <span class="comment"># MIDI number</span>
-sp.play(<span class="string">'lead'</span>, <span class="number">60</span>, duration=<span class="number">0.5</span>)</code></pre>
-                            </div>
-                        </div>
+sp.play(<span class="string">'lead'</span>, <span class="number">60</span>, duration=<span class="number">0.5</span>)
 
-                        <div class="api-item" id="get">
-                            <h4><code>get(name)</code></h4>
-                            <p class="description">Get configuration summary for a synthesizer.</p>
-                            <div class="param-section">
-                                <h5>Parameters:</h5>
-                                <ul>
-                                    <li><code>name</code> (str): Name of the synth</li>
-                                </ul>
+<span class="comment"># Frequency in Hz</span>
+sp.play(<span class="string">'lead'</span>, <span class="number">440.0</span>, duration=<span class="number">0.5</span>)</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="api-item" id="get">
+                        <h4><code>get(name)</code></h4>
+                        <p class="description">Get configuration summary for a synthesizer.</p>
+                        <div class="param-section">
+                            <h5>Parameters:</h5>
+                            <ul>
+                                <li><code>name</code> (str): Name of the synth</li>
+                            </ul>
+                        </div>
+                        <div class="return-section">
+                            <h5>Returns:</h5>
+                            <p>Dictionary with synth configuration</p>
+                        </div>
+                        <div class="code-example">
+                            <div class="code-header">
+                                <span>Python</span>
+                                <button class="copy-btn" data-copy="config = sp.get('lead')&#10;print(config)">Copy</button>
                             </div>
-                            <div class="return-section">
-                                <h5>Returns:</h5>
-                                <p>Dictionary with synth configuration</p>
-                            </div>
-                            <div class="code-example">
-                                <div class="code-header">
-                                    <span>Python</span>
-                                    <button class="copy-btn" data-copy="config = sp.get('lead')&#10;print(config)">Copy</button>
-                                </div>
-                                <pre><code>config = sp.get(<span class="string">'lead'</span>)
+                            <pre><code>config = sp.get(<span class="string">'lead'</span>)
 <span class="keyword">print</span>(config)</code></pre>
-                            </div>
                         </div>
+                    </div>
+                </div>
 
-                        <!-- Utility Functions Section -->
-                        <div class="doc-section" id="utility-section">
-                            <h3 class="doc-section-title">Utility Functions</h3>
+                <div class="doc-section">
+                    <h3 class="doc-section-title">Utility Functions</h3>
 
-                            <div class="api-item" id="midi-to-freq">
-                                <h4><code>midi_to_freq(midi_note)</code></h4>
-                                <p class="description">Convert MIDI note number to frequency in Hz.</p>
-                                <div class="param-section">
-                                    <h5>Parameters:</h5>
-                                    <ul>
-                                        <li><code>midi_note</code> (int): MIDI note number (0-127)</li>
-                                    </ul>
-                                </div>
-                                <div class="return-section">
-                                    <h5>Returns:</h5>
-                                    <p>float: Frequency in Hz</p>
-                                </div>
-                                <div class="code-example">
-                                    <div class="code-header">
-                                        <span>Python</span>
-                                        <button class="copy-btn" data-copy="freq = sp.midi_to_freq(69)  # A4 = 440 Hz">Copy</button>
-                                    </div>
-                                    <pre><code>freq = sp.midi_to_freq(<span class="number">69</span>)  <span class="comment"># A4 = 440 Hz</span></code></pre>
-                                </div>
-                            </div>
-
-                            <div class="api-item" id="note-to-freq">
-                                <h4><code>note_to_freq(note)</code></h4>
-                                <p class="description">Convert note name to frequency. Supports sharps (#) and flats (b).</p>
-                                <div class="param-section">
-                                    <h5>Parameters:</h5>
-                                    <ul>
-                                        <li><code>note</code> (str): Note name (e.g., "C4", "A#3", "Bb2")</li>
-                                    </ul>
-                                </div>
-                                <div class="return-section">
-                                    <h5>Returns:</h5>
-                                    <p>float: Frequency in Hz</p>
-                                </div>
-                                <div class="code-example">
-                                    <div class="code-header">
-                                        <span>Python</span>
-                                        <button class="copy-btn" data-copy="freq = sp.note_to_freq('A4')  # 440 Hz&#10;freq2 = sp.note_to_freq('C#4')">Copy</button>
-                                    </div>
-                                    <pre><code>freq = sp.note_to_freq(<span class="string">'A4'</span>)  <span class="comment"># 440 Hz</span>
-freq2 = sp.note_to_freq(<span class="string">'C#4'</span>)</code></pre>
-                                </div>
-                            </div>
+                    <div class="api-item" id="midi-to-freq">
+                        <h4><code>midi_to_freq(midi_note)</code></h4>
+                        <p class="description">Convert MIDI note number to frequency in Hz.</p>
+                        <div class="param-section">
+                            <h5>Parameters:</h5>
+                            <ul>
+                                <li><code>midi_note</code> (int): MIDI note number (0-127)</li>
+                            </ul>
                         </div>
-
-                        <!-- Track Class Section -->
-                        <div class="doc-section" id="track-section">
-                            <h3 class="doc-section-title">Track Class</h3>
-
-                            <div class="api-item" id="track-init">
-                                <h4><code>Track(bpm=120, sample_rate=44100)</code></h4>
-                                <p class="description">Create a new musical track/sequence with BPM-based timing.</p>
-                                <div class="param-section">
-                                    <h5>Parameters:</h5>
-                                    <ul>
-                                        <li><code>bpm</code> (int, optional): Beats per minute. Default: 120</li>
-                                        <li><code>sample_rate</code> (int, optional): Sample rate in Hz. Default: 44100</li>
-                                    </ul>
-                                </div>
-                                <div class="code-example">
-                                    <div class="code-header">
-                                        <span>Python</span>
-                                        <button class="copy-btn" data-copy="track = sp.Track(bpm=128)">Copy</button>
-                                    </div>
-                                    <pre><code>track = sp.Track(bpm=<span class="number">128</span>)</code></pre>
-                                </div>
+                        <div class="return-section">
+                            <h5>Returns:</h5>
+                            <p>float: Frequency in Hz</p>
+                        </div>
+                        <div class="code-example">
+                            <div class="code-header">
+                                <span>Python</span>
+                                <button class="copy-btn" data-copy="freq = sp.midi_to_freq(69)  # A4 = 440 Hz&#10;print(freq)  # 440.0">Copy</button>
                             </div>
+                            <pre><code>freq = sp.midi_to_freq(<span class="number">69</span>)  <span class="comment"># A4 = 440 Hz</span>
+<span class="keyword">print</span>(freq)  <span class="comment"># 440.0</span></code></pre>
+                        </div>
+                    </div>
 
-                            <div class="api-item" id="track-add">
-                                <h4><code>Track.add(synth, notes, duration=1)</code></h4>
-                                <p class="description">Add an event to the track.</p>
-                                <div class="param-section">
-                                    <h5>Parameters:</h5>
-                                    <ul>
-                                        <li><code>synth</code> (str): Name of synth to use</li>
-                                        <li><code>notes</code> (int/float/str/list): Note(s) to play</li>
-                                        <li><code>duration</code> (float, optional): Duration in beats. Default: 1</li>
-                                    </ul>
-                                </div>
-                                <div class="code-example">
-                                    <div class="code-header">
-                                        <span>Python</span>
-                                        <button class="copy-btn" data-copy="track.add('lead', 'C4', duration=1)&#10;track.add('bass', [60, 64, 67], duration=2)">Copy</button>
-                                    </div>
-                                    <pre><code>track.add(<span class="string">'lead'</span>, <span class="string">'C4'</span>, duration=<span class="number">1</span>)
+                    <div class="api-item" id="note-to-freq">
+                        <h4><code>note_to_freq(note)</code></h4>
+                        <p class="description">Convert note name to frequency. Supports sharps (#) and flats (b).</p>
+                        <div class="param-section">
+                            <h5>Parameters:</h5>
+                            <ul>
+                                <li><code>note</code> (str): Note name (e.g., "C4", "A#3", "Bb2")</li>
+                            </ul>
+                        </div>
+                        <div class="return-section">
+                            <h5>Returns:</h5>
+                            <p>float: Frequency in Hz</p>
+                        </div>
+                        <div class="code-example">
+                            <div class="code-header">
+                                <span>Python</span>
+                                <button class="copy-btn" data-copy="freq = sp.note_to_freq('A4')  # 440 Hz&#10;freq2 = sp.note_to_freq('C#4')&#10;freq3 = sp.note_to_freq('Bb2')">Copy</button>
+                            </div>
+                            <pre><code>freq = sp.note_to_freq(<span class="string">'A4'</span>)  <span class="comment"># 440 Hz</span>
+freq2 = sp.note_to_freq(<span class="string">'C#4'</span>)
+freq3 = sp.note_to_freq(<span class="string">'Bb2'</span>)</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="doc-section">
+                    <h3 class="doc-section-title">Track Class</h3>
+
+                    <div class="api-item" id="track-init">
+                        <h4><code>Track(bpm=120, sample_rate=44100)</code></h4>
+                        <p class="description">Create a new musical track/sequence with BPM-based timing.</p>
+                        <div class="param-section">
+                            <h5>Parameters:</h5>
+                            <ul>
+                                <li><code>bpm</code> (int, optional): Beats per minute. Default: 120</li>
+                                <li><code>sample_rate</code> (int, optional): Sample rate in Hz. Default: 44100</li>
+                            </ul>
+                        </div>
+                        <div class="code-example">
+                            <div class="code-header">
+                                <span>Python</span>
+                                <button class="copy-btn" data-copy="track = sp.Track(bpm=128)">Copy</button>
+                            </div>
+                            <pre><code>track = sp.Track(bpm=<span class="number">128</span>)</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="api-item" id="track-add">
+                        <h4><code>Track.add(synth, notes, duration=1)</code></h4>
+                        <p class="description">Add an event to the track.</p>
+                        <div class="param-section">
+                            <h5>Parameters:</h5>
+                            <ul>
+                                <li><code>synth</code> (str): Name of synth to use</li>
+                                <li><code>notes</code> (int/float/str/list): Note(s) to play</li>
+                                <li><code>duration</code> (float, optional): Duration in beats. Default: 1</li>
+                            </ul>
+                        </div>
+                        <div class="code-example">
+                            <div class="code-header">
+                                <span>Python</span>
+                                <button class="copy-btn" data-copy="track.add('lead', 'C4', duration=1)&#10;track.add('bass', [60, 64, 67], duration=2)">Copy</button>
+                            </div>
+                            <pre><code>track.add(<span class="string">'lead'</span>, <span class="string">'C4'</span>, duration=<span class="number">1</span>)
 track.add(<span class="string">'bass'</span>, [<span class="number">60</span>, <span class="number">64</span>, <span class="number">67</span>], duration=<span class="number">2</span>)</code></pre>
-                                </div>
-                            </div>
+                        </div>
+                    </div>
 
-                            <div class="api-item" id="track-addchord">
-                                <h4><code>Track.addChord(synth, chord, duration=1)</code></h4>
-                                <p class="description">Add a chord using chord notation. Supports major (e.g., "C4") and minor chords (e.g., "Am3").</p>
-                                <div class="param-section">
-                                    <h5>Parameters:</h5>
-                                    <ul>
-                                        <li><code>synth</code> (str): Name of synth to use</li>
-                                        <li><code>chord</code> (str): Chord notation (e.g., "C4", "Am3", "F#5")</li>
-                                        <li><code>duration</code> (float, optional): Duration in beats. Default: 1</li>
-                                    </ul>
-                                </div>
-                                <div class="code-example">
-                                    <div class="code-header">
-                                        <span>Python</span>
-                                        <button class="copy-btn" data-copy="track.addChord('pad', 'C4', duration=2)  # C major&#10;track.addChord('pad', 'Am3', duration=2)  # A minor">Copy</button>
-                                    </div>
-                                    <pre><code>track.addChord(<span class="string">'pad'</span>, <span class="string">'C4'</span>, duration=<span class="number">2</span>)  <span class="comment"># C major</span>
+                    <div class="api-item" id="track-addchord">
+                        <h4><code>Track.addChord(synth, chord, duration=1)</code></h4>
+                        <p class="description">Add a chord using chord notation. Supports major (e.g., "C4") and minor chords (e.g., "Am3").</p>
+                        <div class="param-section">
+                            <h5>Parameters:</h5>
+                            <ul>
+                                <li><code>synth</code> (str): Name of synth to use</li>
+                                <li><code>chord</code> (str): Chord notation (e.g., "C4", "Am3", "F#5")</li>
+                                <li><code>duration</code> (float, optional): Duration in beats. Default: 1</li>
+                            </ul>
+                        </div>
+                        <div class="code-example">
+                            <div class="code-header">
+                                <span>Python</span>
+                                <button class="copy-btn" data-copy="track.addChord('pad', 'C4', duration=2)  # C major&#10;track.addChord('pad', 'Am3', duration=2)  # A minor">Copy</button>
+                            </div>
+                            <pre><code>track.addChord(<span class="string">'pad'</span>, <span class="string">'C4'</span>, duration=<span class="number">2</span>)  <span class="comment"># C major</span>
 track.addChord(<span class="string">'pad'</span>, <span class="string">'Am3'</span>, duration=<span class="number">2</span>)  <span class="comment"># A minor</span></code></pre>
-                                </div>
-                            </div>
-
-                            <div class="api-item" id="track-play">
-                                <h4><code>Track.play()</code></h4>
-                                <p class="description">Play the track through audio output.</p>
-                                <div class="code-example">
-                                    <div class="code-header">
-                                        <span>Python</span>
-                                        <button class="copy-btn" data-copy="track.play()">Copy</button>
-                                    </div>
-                                    <pre><code>track.play()</code></pre>
-                                </div>
-                            </div>
-
-                            <div class="api-item" id="track-export">
-                                <h4><code>Track.export(filename="output.wav")</code></h4>
-                                <p class="description">Export track to a WAV file.</p>
-                                <div class="param-section">
-                                    <h5>Parameters:</h5>
-                                    <ul>
-                                        <li><code>filename</code> (str, optional): Output filename. Default: "output.wav"</li>
-                                    </ul>
-                                </div>
-                                <div class="code-example">
-                                    <div class="code-header">
-                                        <span>Python</span>
-                                        <button class="copy-btn" data-copy="track.export('my_track.wav')">Copy</button>
-                                    </div>
-                                    <pre><code>track.export(<span class="string">'my_track.wav'</span>)</code></pre>
-                                </div>
-                            </div>
                         </div>
+                    </div>
 
-                        <!-- Song Class Section -->
-                        <div class="doc-section" id="song-section">
-                            <h3 class="doc-section-title">Song Class</h3>
-
-                            <div class="api-item" id="song-init">
-                                <h4><code>Song(bpm=120, sample_rate=44100)</code></h4>
-                                <p class="description">Create a multi-track song with universal beat counter. Supports precise beat positioning including fractional beats (e.g., 200.5).</p>
-                                <div class="param-section">
-                                    <h5>Parameters:</h5>
-                                    <ul>
-                                        <li><code>bpm</code> (int, optional): Beats per minute for the entire song. Default: 120</li>
-                                        <li><code>sample_rate</code> (int, optional): Sample rate in Hz. Default: 44100</li>
-                                    </ul>
-                                </div>
-                                <div class="code-example">
-                                    <div class="code-header">
-                                        <span>Python</span>
-                                        <button class="copy-btn" data-copy="song = sp.Song(bpm=140)">Copy</button>
-                                    </div>
-                                    <pre><code>song = sp.Song(bpm=<span class="number">140</span>)</code></pre>
-                                </div>
+                    <div class="api-item" id="track-play">
+                        <h4><code>Track.play()</code></h4>
+                        <p class="description">Play the track through audio output.</p>
+                        <div class="code-example">
+                            <div class="code-header">
+                                <span>Python</span>
+                                <button class="copy-btn" data-copy="track.play()">Copy</button>
                             </div>
+                            <pre><code>track.play()</code></pre>
+                        </div>
+                    </div>
 
-                            <div class="api-item" id="song-add">
-                                <h4><code>Song.add(track_name, synth, notes, beat_position, duration=1)</code></h4>
-                                <p class="description">Add an event to a specific track at a specific beat position. Track is auto-created if it doesn't exist.</p>
-                                <div class="param-section">
-                                    <h5>Parameters:</h5>
-                                    <ul>
-                                        <li><code>track_name</code> (str): Track identifier (auto-created if new)</li>
-                                        <li><code>synth</code> (str): Name of synthesizer to use</li>
-                                        <li><code>notes</code> (int/float/str/list): Note(s) to play</li>
-                                        <li><code>beat_position</code> (float): Start beat (supports fractional beats like 200.5)</li>
-                                        <li><code>duration</code> (float, optional): Duration in beats. Default: 1</li>
-                                    </ul>
-                                </div>
-                                <div class="code-example">
-                                    <div class="code-header">
-                                        <span>Python</span>
-                                        <button class="copy-btn" data-copy="song.add('melody', 'lead', 'C4', beat_position=0, duration=1)&#10;song.add('melody', 'lead', 'E4', beat_position=1.5, duration=0.5)">Copy</button>
-                                    </div>
-                                    <pre><code>song.add(<span class="string">'melody'</span>, <span class="string">'lead'</span>, <span class="string">'C4'</span>, beat_position=<span class="number">0</span>, duration=<span class="number">1</span>)
+                    <div class="api-item" id="track-export">
+                        <h4><code>Track.export(filename="output.wav")</code></h4>
+                        <p class="description">Export track to a WAV file.</p>
+                        <div class="param-section">
+                            <h5>Parameters:</h5>
+                            <ul>
+                                <li><code>filename</code> (str, optional): Output filename. Default: "output.wav"</li>
+                            </ul>
+                        </div>
+                        <div class="code-example">
+                            <div class="code-header">
+                                <span>Python</span>
+                                <button class="copy-btn" data-copy="track.export('my_track.wav')">Copy</button>
+                            </div>
+                            <pre><code>track.export(<span class="string">'my_track.wav'</span>)</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="doc-section">
+                    <h3 class="doc-section-title">Song Class</h3>
+
+                    <div class="api-item" id="song-init">
+                        <h4><code>Song(bpm=120, sample_rate=44100)</code></h4>
+                        <p class="description">Create a multi-track song with universal beat counter. Supports precise beat positioning including fractional beats (e.g., 200.5).</p>
+                        <div class="param-section">
+                            <h5>Parameters:</h5>
+                            <ul>
+                                <li><code>bpm</code> (int, optional): Beats per minute for the entire song. Default: 120</li>
+                                <li><code>sample_rate</code> (int, optional): Sample rate in Hz. Default: 44100</li>
+                            </ul>
+                        </div>
+                        <div class="code-example">
+                            <div class="code-header">
+                                <span>Python</span>
+                                <button class="copy-btn" data-copy="song = sp.Song(bpm=140)">Copy</button>
+                            </div>
+                            <pre><code>song = sp.Song(bpm=<span class="number">140</span>)</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="api-item" id="song-add">
+                        <h4><code>Song.add(track_name, synth, notes, beat_position, duration=1)</code></h4>
+                        <p class="description">Add an event to a specific track at a specific beat position. Track is auto-created if it doesn't exist.</p>
+                        <div class="param-section">
+                            <h5>Parameters:</h5>
+                            <ul>
+                                <li><code>track_name</code> (str): Track identifier (auto-created if new)</li>
+                                <li><code>synth</code> (str): Name of synthesizer to use</li>
+                                <li><code>notes</code> (int/float/str/list): Note(s) to play</li>
+                                <li><code>beat_position</code> (float): Start beat (supports fractional beats like 200.5)</li>
+                                <li><code>duration</code> (float, optional): Duration in beats. Default: 1</li>
+                            </ul>
+                        </div>
+                        <div class="code-example">
+                            <div class="code-header">
+                                <span>Python</span>
+                                <button class="copy-btn" data-copy="song.add('melody', 'lead', 'C4', beat_position=0, duration=1)&#10;song.add('melody', 'lead', 'E4', beat_position=1.5, duration=0.5)">Copy</button>
+                            </div>
+                            <pre><code>song.add(<span class="string">'melody'</span>, <span class="string">'lead'</span>, <span class="string">'C4'</span>, beat_position=<span class="number">0</span>, duration=<span class="number">1</span>)
 song.add(<span class="string">'melody'</span>, <span class="string">'lead'</span>, <span class="string">'E4'</span>, beat_position=<span class="number">1.5</span>, duration=<span class="number">0.5</span>)</code></pre>
-                                </div>
-                            </div>
-
-                            <div class="api-item" id="song-addchord">
-                                <h4><code>Song.add_chord(track_name, synth, chord, beat_position, duration=1)</code></h4>
-                                <p class="description">Add a chord event to a specific track at a specific beat position.</p>
-                                <div class="param-section">
-                                    <h5>Parameters:</h5>
-                                    <ul>
-                                        <li><code>track_name</code> (str): Track identifier</li>
-                                        <li><code>synth</code> (str): Name of synthesizer to use</li>
-                                        <li><code>chord</code> (str): Chord notation (e.g., "C4", "Am3")</li>
-                                        <li><code>beat_position</code> (float): Start beat</li>
-                                        <li><code>duration</code> (float, optional): Duration in beats. Default: 1</li>
-                                    </ul>
-                                </div>
-                                <div class="code-example">
-                                    <div class="code-header">
-                                        <span>Python</span>
-                                        <button class="copy-btn" data-copy="song.add_chord('chords', 'pad', 'C4', beat_position=0, duration=4)">Copy</button>
-                                    </div>
-                                    <pre><code>song.add_chord(<span class="string">'chords'</span>, <span class="string">'pad'</span>, <span class="string">'C4'</span>, beat_position=<span class="number">0</span>, duration=<span class="number">4</span>)</code></pre>
-                                </div>
-                            </div>
-
-                            <div class="api-item" id="song-play">
-                                <h4><code>Song.play()</code></h4>
-                                <p class="description">Render and play the entire song through audio output.</p>
-                                <div class="code-example">
-                                    <div class="code-header">
-                                        <span>Python</span>
-                                        <button class="copy-btn" data-copy="song.play()">Copy</button>
-                                    </div>
-                                    <pre><code>song.play()</code></pre>
-                                </div>
-                            </div>
-
-                            <div class="api-item" id="song-export">
-                                <h4><code>Song.export(filename="output.wav")</code></h4>
-                                <p class="description">Render and export the song to a WAV file.</p>
-                                <div class="param-section">
-                                    <h5>Parameters:</h5>
-                                    <ul>
-                                        <li><code>filename</code> (str, optional): Output filename. Default: "output.wav"</li>
-                                    </ul>
-                                </div>
-                                <div class="code-example">
-                                    <div class="code-header">
-                                        <span>Python</span>
-                                        <button class="copy-btn" data-copy="song.export('my_song.wav')">Copy</button>
-                                    </div>
-                                    <pre><code>song.export(<span class="string">'my_song.wav'</span>)</code></pre>
-                                </div>
-                            </div>
-
-                            <div class="api-item" id="song-duration">
-                                <h4><code>Song.get_duration()</code></h4>
-                                <p class="description">Get the total duration of the song.</p>
-                                <div class="return-section">
-                                    <h5>Returns:</h5>
-                                    <p>Dictionary with 'beats', 'seconds', and 'formatted' time</p>
-                                </div>
-                                <div class="code-example">
-                                    <div class="code-header">
-                                        <span>Python</span>
-                                        <button class="copy-btn" data-copy="duration = song.get_duration()&#10;print(duration)  # {'beats': 4, 'seconds': 2.0, 'formatted': '0:02.00'}">Copy</button>
-                                    </div>
-                                    <pre><code>duration = song.get_duration()
-<span class="keyword">print</span>(duration)  <span class="comment"># {'beats': 4, 'seconds': 2.0, 'formatted': '0:02.00'}</span></code></pre>
-                                </div>
-                            </div>
-
-                            <div class="api-item" id="song-list">
-                                <h4><code>Song.list_tracks()</code></h4>
-                                <p class="description">Get information about all tracks in the song.</p>
-                                <div class="return-section">
-                                    <h5>Returns:</h5>
-                                    <p>Dictionary with track names, event counts, and synths used</p>
-                                </div>
-                                <div class="code-example">
-                                    <div class="code-header">
-                                        <span>Python</span>
-                                        <button class="copy-btn" data-copy="tracks = song.list_tracks()&#10;print(tracks)">Copy</button>
-                                    </div>
-                                    <pre><code>tracks = song.list_tracks()
-<span class="keyword">print</span>(tracks)</code></pre>
-                                </div>
-                            </div>
                         </div>
+                    </div>
 
-                        <!-- Waveforms Section -->
-                        <div class="doc-section" id="waves-section">
-                            <h3 class="doc-section-title">Waveform Generators</h3>
+                    <div class="api-item" id="song-addchord">
+                        <h4><code>Song.add_chord(track_name, synth, chord, beat_position, duration=1)</code></h4>
+                        <p class="description">Add a chord event to a specific track at a specific beat position.</p>
+                        <div class="param-section">
+                            <h5>Parameters:</h5>
+                            <ul>
+                                <li><code>track_name</code> (str): Track identifier</li>
+                                <li><code>synth</code> (str): Name of synthesizer to use</li>
+                                <li><code>chord</code> (str): Chord notation (e.g., "C4", "Am3")</li>
+                                <li><code>beat_position</code> (float): Start beat</li>
+                                <li><code>duration</code> (float, optional): Duration in beats. Default: 1</li>
+                            </ul>
+                        </div>
+                        <div class="code-example">
+                            <div class="code-header">
+                                <span>Python</span>
+                                <button class="copy-btn" data-copy="song.add_chord('chords', 'pad', 'C4', beat_position=0, duration=4)">Copy</button>
+                            </div>
+                            <pre><code>song.add_chord(<span class="string">'chords'</span>, <span class="string">'pad'</span>, <span class="string">'C4'</span>, beat_position=<span class="number">0</span>, duration=<span class="number">4</span>)</code></pre>
+                        </div>
+                    </div>
 
-                            <div class="api-item" id="waves">
-                                <h4><code>sp.waves.*</code></h4>
-                                <p class="description">Built-in waveform generators. All have signature: <code>func(t, freq=440, amp=1.0)</code></p>
-                                <div class="param-section">
-                                    <h5>Available Waveforms:</h5>
-                                    <ul>
-                                        <li><code>sp.waves.sine</code> - Pure sine wave</li>
-                                        <li><code>sp.waves.square</code> - Square wave</li>
-                                        <li><code>sp.waves.sawtooth</code> - Sawtooth wave</li>
-                                        <li><code>sp.waves.triangle</code> - Triangle wave</li>
-                                        <li><code>sp.waves.noise</code> - White noise</li>
-                                    </ul>
-                                </div>
-                                <div class="code-example">
-                                    <div class="code-header">
-                                        <span>Python</span>
-                                        <button class="copy-btn" data-copy="sp.create('synth1', wavetype=sp.waves.sine)&#10;sp.create('synth2', wavetype=sp.waves.square)&#10;sp.create('synth3', wavetype=sp.waves.sawtooth)">Copy</button>
-                                    </div>
-                                    <pre><code>sp.create(<span class="string">'synth1'</span>, wavetype=sp.waves.sine)
+                    <div class="api-item" id="song-play">
+                        <h4><code>Song.play()</code></h4>
+                        <p class="description">Render and play the entire song through audio output.</p>
+                        <div class="code-example">
+                            <div class="code-header">
+                                <span>Python</span>
+                                <button class="copy-btn" data-copy="song.play()">Copy</button>
+                            </div>
+                            <pre><code>song.play()</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="api-item" id="song-export">
+                        <h4><code>Song.export(filename="output.wav")</code></h4>
+                        <p class="description">Render and export the song to a WAV file.</p>
+                        <div class="param-section">
+                            <h5>Parameters:</h5>
+                            <ul>
+                                <li><code>filename</code> (str, optional): Output filename. Default: "output.wav"</li>
+                            </ul>
+                        </div>
+                        <div class="code-example">
+                            <div class="code-header">
+                                <span>Python</span>
+                                <button class="copy-btn" data-copy="song.export('my_song.wav')">Copy</button>
+                            </div>
+                            <pre><code>song.export(<span class="string">'my_song.wav'</span>)</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="api-item" id="song-duration">
+                        <h4><code>Song.get_duration()</code></h4>
+                        <p class="description">Get the total duration of the song.</p>
+                        <div class="return-section">
+                            <h5>Returns:</h5>
+                            <p>Dictionary with 'beats', 'seconds', and 'formatted' time</p>
+                        </div>
+                        <div class="code-example">
+                            <div class="code-header">
+                                <span>Python</span>
+                                <button class="copy-btn" data-copy="duration = song.get_duration()&#10;print(duration)  # {'beats': 4, 'seconds': 2.0, 'formatted': '0:02.00'}">Copy</button>
+                            </div>
+                            <pre><code>duration = song.get_duration()
+<span class="keyword">print</span>(duration)  <span class="comment"># {'beats': 4, 'seconds': 2.0, 'formatted': '0:02.00'}</span></code></pre>
+                        </div>
+                    </div>
+
+                    <div class="api-item" id="song-list">
+                        <h4><code>Song.list_tracks()</code></h4>
+                        <p class="description">Get information about all tracks in the song.</p>
+                        <div class="return-section">
+                            <h5>Returns:</h5>
+                            <p>Dictionary with track names, event counts, and synths used</p>
+                        </div>
+                        <div class="code-example">
+                            <div class="code-header">
+                                <span>Python</span>
+                                <button class="copy-btn" data-copy="tracks = song.list_tracks()&#10;print(tracks)">Copy</button>
+                            </div>
+                            <pre><code>tracks = song.list_tracks()
+<span class="keyword">print</span>(tracks)</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="doc-section">
+                    <h3 class="doc-section-title">Waveform Generators</h3>
+
+                    <div class="api-item" id="waves">
+                        <h4><code>sp.waves.*</code></h4>
+                        <p class="description">Built-in waveform generators. All have signature: <code>func(t, freq=440, amp=1.0)</code></p>
+                        <div class="param-section">
+                            <h5>Available Waveforms:</h5>
+                            <ul>
+                                <li><code>sp.waves.sine</code> - Pure sine wave</li>
+                                <li><code>sp.waves.square</code> - Square wave</li>
+                                <li><code>sp.waves.sawtooth</code> - Sawtooth wave</li>
+                                <li><code>sp.waves.triangle</code> - Triangle wave</li>
+                                <li><code>sp.waves.noise</code> - White noise</li>
+                            </ul>
+                        </div>
+                        <div class="code-example">
+                            <div class="code-header">
+                                <span>Python</span>
+                                <button class="copy-btn" data-copy="sp.create('synth1', wavetype=sp.waves.sine)&#10;sp.create('synth2', wavetype=sp.waves.square)&#10;sp.create('synth3', wavetype=sp.waves.sawtooth)">Copy</button>
+                            </div>
+                            <pre><code>sp.create(<span class="string">'synth1'</span>, wavetype=sp.waves.sine)
 sp.create(<span class="string">'synth2'</span>, wavetype=sp.waves.square)
 sp.create(<span class="string">'synth3'</span>, wavetype=sp.waves.sawtooth)</code></pre>
-                                </div>
-                            </div>
+                        </div>
+                    </div>
 
-                            <div class="api-item" id="custom-wave">
-                                <h4>Custom Waveform Functions</h4>
-                                <p class="description">Create your own custom waveform generator functions. Must accept parameters: t (time array), freq (frequency), and amp (amplitude).</p>
-                                <div class="code-example">
-                                    <div class="code-header">
-                                        <span>Python</span>
-                                        <button class="copy-btn" data-copy="import numpy as np&#10;&#10;def custom_wave(t, freq=440, amp=1.0):&#10;    # Create a custom waveform (example: sine + sine harmonic)&#10;    return amp * (np.sin(2 * np.pi * freq * t) + &#10;                  0.5 * np.sin(4 * np.pi * freq * t))&#10;&#10;sp.create('custom', wavetype=custom_wave)">Copy</button>
-                                    </div>
-                                    <pre><code><span class="keyword">import</span> numpy <span class="keyword">as</span> np
+                    <div class="api-item" id="custom-wave">
+                        <h4>Custom Waveform Functions</h4>
+                        <p class="description">Create your own custom waveform generator functions. Must accept parameters: t (time array), freq (frequency), and amp (amplitude).</p>
+                        <div class="code-example">
+                            <div class="code-header">
+                                <span>Python</span>
+                                <button class="copy-btn" data-copy="import numpy as np&#10;&#10;def custom_wave(t, freq=440, amp=1.0):&#10;    # Create a custom waveform (example: sine + sine harmonic)&#10;    return amp * (np.sin(2 * np.pi * freq * t) + &#10;                  0.5 * np.sin(4 * np.pi * freq * t))&#10;&#10;sp.create('custom', wavetype=custom_wave)">Copy</button>
+                            </div>
+                            <pre><code><span class="keyword">import</span> numpy <span class="keyword">as</span> np
 
 <span class="keyword">def</span> custom_wave(t, freq=<span class="number">440</span>, amp=<span class="number">1.0</span>):
     <span class="comment"># Create a custom waveform (example: sine + sine harmonic)</span>
-    <span class="keyword">return</span> amp * (np.sin(<span class="number">2</span> * np.pi * freq * t) +
+    <span class="keyword">return</span> amp * (np.sin(<span class="number">2</span> * np.pi * freq * t) + 
                   <span class="number">0.5</span> * np.sin(<span class="number">4</span> * np.pi * freq * t))
 
 sp.create(<span class="string">'custom'</span>, wavetype=custom_wave)</code></pre>
-                                </div>
-                            </div>
                         </div>
+                    </div>
+                </div>
 
-                        <!-- Filters Section -->
-                        <div class="doc-section" id="filters-section">
-                            <h3 class="doc-section-title">Audio Filters</h3>
+                <div class="doc-section">
+                    <h3 class="doc-section-title">Audio Filters</h3>
 
-                            <div class="api-item" id="lowpass">
-                                <h4><code>sp.filters.low_pass(signal, sample_rate, cutoff=1000.0, order=4)</code></h4>
-                                <p class="description">Butterworth low-pass filter. Use with functools.partial to set parameters.</p>
-                                <div class="param-section">
-                                    <h5>Parameters:</h5>
-                                    <ul>
-                                        <li><code>signal</code> (array): Audio signal</li>
-                                        <li><code>sample_rate</code> (int): Sample rate</li>
-                                        <li><code>cutoff</code> (float, optional): Cutoff frequency in Hz. Default: 1000.0</li>
-                                        <li><code>order</code> (int, optional): Filter order. Default: 4</li>
-                                    </ul>
-                                </div>
-                                <div class="code-example">
-                                    <div class="code-header">
-                                        <span>Python</span>
-                                        <button class="copy-btn" data-copy="from functools import partial&#10;&#10;sp.create('bass', filters=[partial(sp.filters.low_pass, cutoff=500)])">Copy</button>
-                                    </div>
-                                    <pre><code><span class="keyword">from</span> functools <span class="keyword">import</span> partial
+                    <div class="api-item" id="lowpass">
+                        <h4><code>sp.filters.low_pass(signal, sample_rate, cutoff=1000.0, order=4)</code></h4>
+                        <p class="description">Butterworth low-pass filter. Use with functools.partial to set parameters.</p>
+                        <div class="param-section">
+                            <h5>Parameters:</h5>
+                            <ul>
+                                <li><code>signal</code> (array): Audio signal</li>
+                                <li><code>sample_rate</code> (int): Sample rate</li>
+                                <li><code>cutoff</code> (float, optional): Cutoff frequency in Hz. Default: 1000.0</li>
+                                <li><code>order</code> (int, optional): Filter order. Default: 4</li>
+                            </ul>
+                        </div>
+                        <div class="code-example">
+                            <div class="code-header">
+                                <span>Python</span>
+                                <button class="copy-btn" data-copy="from functools import partial&#10;&#10;sp.create('bass', filters=[partial(sp.filters.low_pass, cutoff=500)])">Copy</button>
+                            </div>
+                            <pre><code><span class="keyword">from</span> functools <span class="keyword">import</span> partial
 
 sp.create(<span class="string">'bass'</span>, filters=[partial(sp.filters.low_pass, cutoff=<span class="number">500</span>)])</code></pre>
-                                </div>
-                            </div>
+                        </div>
+                    </div>
 
-                            <div class="api-item" id="highpass">
-                                <h4><code>sp.filters.high_pass(signal, sample_rate, cutoff=200.0, order=4)</code></h4>
-                                <p class="description">Butterworth high-pass filter.</p>
-                                <div class="param-section">
-                                    <h5>Parameters:</h5>
-                                    <ul>
-                                        <li><code>cutoff</code> (float, optional): Cutoff frequency in Hz. Default: 200.0</li>
-                                        <li><code>order</code> (int, optional): Filter order. Default: 4</li>
-                                    </ul>
-                                </div>
-                            </div>
+                    <div class="api-item" id="highpass">
+                        <h4><code>sp.filters.high_pass(signal, sample_rate, cutoff=200.0, order=4)</code></h4>
+                        <p class="description">Butterworth high-pass filter.</p>
+                        <div class="param-section">
+                            <h5>Parameters:</h5>
+                            <ul>
+                                <li><code>cutoff</code> (float, optional): Cutoff frequency in Hz. Default: 200.0</li>
+                                <li><code>order</code> (int, optional): Filter order. Default: 4</li>
+                            </ul>
+                        </div>
+                    </div>
 
-                            <div class="api-item" id="bandpass">
-                                <h4><code>sp.filters.band_pass(signal, sample_rate, low=300.0, high=3000.0, order=4)</code></h4>
-                                <p class="description">Butterworth band-pass filter.</p>
-                                <div class="param-section">
-                                    <h5>Parameters:</h5>
-                                    <ul>
-                                        <li><code>low</code> (float, optional): Low cutoff in Hz. Default: 300.0</li>
-                                        <li><code>high</code> (float, optional): High cutoff in Hz. Default: 3000.0</li>
-                                        <li><code>order</code> (int, optional): Filter order. Default: 4</li>
-                                    </ul>
-                                </div>
-                            </div>
+                    <div class="api-item" id="bandpass">
+                        <h4><code>sp.filters.band_pass(signal, sample_rate, low=300.0, high=3000.0, order=4)</code></h4>
+                        <p class="description">Butterworth band-pass filter.</p>
+                        <div class="param-section">
+                            <h5>Parameters:</h5>
+                            <ul>
+                                <li><code>low</code> (float, optional): Low cutoff in Hz. Default: 300.0</li>
+                                <li><code>high</code> (float, optional): High cutoff in Hz. Default: 3000.0</li>
+                                <li><code>order</code> (int, optional): Filter order. Default: 4</li>
+                            </ul>
+                        </div>
+                    </div>
 
-                            <div class="api-item" id="echo">
-                                <h4><code>sp.filters.echo(signal, sample_rate, delay=0.25, decay=0.4)</code></h4>
-                                <p class="description">Echo/delay effect.</p>
-                                <div class="param-section">
-                                    <h5>Parameters:</h5>
-                                    <ul>
-                                        <li><code>delay</code> (float, optional): Delay time in seconds. Default: 0.25</li>
-                                        <li><code>decay</code> (float, optional): Decay factor (0-1). Default: 0.4</li>
-                                    </ul>
-                                </div>
-                                <div class="code-example">
-                                    <div class="code-header">
-                                        <span>Python</span>
-                                        <button class="copy-btn" data-copy="from functools import partial&#10;&#10;sp.create('lead', filters=[partial(sp.filters.echo, delay=0.5, decay=0.6)])">Copy</button>
-                                    </div>
-                                    <pre><code><span class="keyword">from</span> functools <span class="keyword">import</span> partial
+                    <div class="api-item" id="echo">
+                        <h4><code>sp.filters.echo(signal, sample_rate, delay=0.25, decay=0.4)</code></h4>
+                        <p class="description">Echo/delay effect.</p>
+                        <div class="param-section">
+                            <h5>Parameters:</h5>
+                            <ul>
+                                <li><code>delay</code> (float, optional): Delay time in seconds. Default: 0.25</li>
+                                <li><code>decay</code> (float, optional): Decay factor (0-1). Default: 0.4</li>
+                            </ul>
+                        </div>
+                        <div class="code-example">
+                            <div class="code-header">
+                                <span>Python</span>
+                                <button class="copy-btn" data-copy="from functools import partial&#10;&#10;sp.create('lead', filters=[partial(sp.filters.echo, delay=0.5, decay=0.6)])">Copy</button>
+                            </div>
+                            <pre><code><span class="keyword">from</span> functools <span class="keyword">import</span> partial
 
 sp.create(<span class="string">'lead'</span>, filters=[partial(sp.filters.echo, delay=<span class="number">0.5</span>, decay=<span class="number">0.6</span>)])</code></pre>
-                                </div>
-                            </div>
+                        </div>
+                    </div>
 
-                            <div class="api-item" id="distortion">
-                                <h4><code>sp.filters.simple_distortion(signal, sample_rate, gain=1.0, threshold=0.8)</code></h4>
-                                <p class="description">Clipping-based distortion effect.</p>
-                                <div class="param-section">
-                                    <h5>Parameters:</h5>
-                                    <ul>
-                                        <li><code>gain</code> (float, optional): Gain multiplier. Default: 1.0</li>
-                                        <li><code>threshold</code> (float, optional): Clipping threshold. Default: 0.8</li>
-                                    </ul>
-                                </div>
-                            </div>
+                    <div class="api-item" id="distortion">
+                        <h4><code>sp.filters.simple_distortion(signal, sample_rate, gain=1.0, threshold=0.8)</code></h4>
+                        <p class="description">Clipping-based distortion effect.</p>
+                        <div class="param-section">
+                            <h5>Parameters:</h5>
+                            <ul>
+                                <li><code>gain</code> (float, optional): Gain multiplier. Default: 1.0</li>
+                                <li><code>threshold</code> (float, optional): Clipping threshold. Default: 0.8</li>
+                            </ul>
+                        </div>
+                    </div>
 
-                            <div class="api-item" id="custom-filter">
-                                <h4>Custom Filter Functions</h4>
-                                <p class="description">Create your own custom filter functions. Must accept parameters: signal (audio array) and sample_rate.</p>
-                                <div class="code-example">
-                                    <div class="code-header">
-                                        <span>Python</span>
-                                        <button class="copy-btn" data-copy="from functools import partial&#10;import numpy as np&#10;&#10;def custom_filter(signal, sample_rate, amount=0.5):&#10;    # Example: simple tremolo effect&#10;    t = np.arange(len(signal)) / sample_rate&#10;    modulator = 1 + amount * np.sin(2 * np.pi * 5 * t)  # 5 Hz&#10;    return signal * modulator&#10;&#10;sp.create('synth', filters=[partial(custom_filter, amount=0.3)])">Copy</button>
-                                    </div>
-                                    <pre><code><span class="keyword">from</span> functools <span class="keyword">import</span> partial
+                    <div class="api-item" id="filter-helpers">
+                        <h4>Filter Helpers</h4>
+                        <p class="description">For convenience, use these shorthand functions that automatically create partial functions with custom parameters.</p>
+                        <div class="code-example">
+                            <div class="code-header">
+                                <span>Python</span>
+                                <button class="copy-btn" data-copy="from functools import partial&#10;&#10;# Using filter helpers&#10;sp.filters.lp(cutoff=500)      # Low-pass&#10;sp.filters.hp(cutoff=100)      # High-pass&#10;sp.filters.bp(low=200, high=2000)  # Band-pass&#10;sp.filters.delay(delay=0.5, decay=0.6)  # Echo&#10;sp.filters.dist(gain=2.0, threshold=0.7)  # Distortion">Copy</button>
+                            </div>
+                            <pre><code><span class="keyword">from</span> functools <span class="keyword">import</span> partial
+
+<span class="comment"># Using filter helpers</span>
+sp.filters.lp(cutoff=<span class="number">500</span>)      <span class="comment"># Low-pass</span>
+sp.filters.hp(cutoff=<span class="number">100</span>)      <span class="comment"># High-pass</span>
+sp.filters.bp(low=<span class="number">200</span>, high=<span class="number">2000</span>)  <span class="comment"># Band-pass</span>
+sp.filters.delay(delay=<span class="number">0.5</span>, decay=<span class="number">0.6</span>)  <span class="comment"># Echo</span>
+sp.filters.dist(gain=<span class="number">2.0</span>, threshold=<span class="number">0.7</span>)  <span class="comment"># Distortion</span></code></pre>
+                        </div>
+                    </div>
+
+                    <div class="api-item" id="custom-filter">
+                        <h4>Custom Filter Functions</h4>
+                        <p class="description">Create your own custom filter functions. Must accept parameters: signal (audio array) and sample_rate.</p>
+                        <div class="code-example">
+                            <div class="code-header">
+                                <span>Python</span>
+                                <button class="copy-btn" data-copy="from functools import partial&#10;import numpy as np&#10;&#10;def custom_filter(signal, sample_rate, amount=0.5):&#10;    # Example: simple tremolo effect&#10;    t = np.arange(len(signal)) / sample_rate&#10;    modulator = 1 + amount * np.sin(2 * np.pi * 5 * t)  # 5 Hz&#10;    return signal * modulator&#10;&#10;sp.create('synth', filters=[partial(custom_filter, amount=0.3)])">Copy</button>
+                            </div>
+                            <pre><code><span class="keyword">from</span> functools <span class="keyword">import</span> partial
 <span class="keyword">import</span> numpy <span class="keyword">as</span> np
 
 <span class="keyword">def</span> custom_filter(signal, sample_rate, amount=<span class="number">0.5</span>):
@@ -780,16 +787,13 @@ sp.create(<span class="string">'lead'</span>, filters=[partial(sp.filters.echo, 
     <span class="keyword">return</span> signal * modulator
 
 sp.create(<span class="string">'synth'</span>, filters=[partial(custom_filter, amount=<span class="number">0.3</span>)])</code></pre>
-                                </div>
-                            </div>
                         </div>
                     </div>
-                </main>
-            </div>
+                </div>
+            </main>
         </div>
     </section>
 
-    <!-- Examples Section -->
     <section id="examples" class="examples-section">
         <div class="container">
             <h2 class="section-title">Examples</h2>
@@ -799,7 +803,7 @@ sp.create(<span class="string">'synth'</span>, filters=[partial(custom_filter, a
                     <div class="code-example">
                         <div class="code-header">
                             <span>Python</span>
-                            <button class="copy-btn" data-copy="import sprechstimme as sp&#10;&#10;# Create and configure a synthesizer&#10;sp.new('lead')&#10;sp.create('lead', wavetype=sp.waves.sawtooth)&#10;&#10;# Play a single note (MIDI number 60 = middle C)&#10;sp.play('lead', 60, duration=0.5)&#10;&#10;# Play using note names&#10;sp.play('lead', 'C4', duration=0.5)&#10;&#10;# Play a chord&#10;sp.play('lead', [60, 64, 67], duration=1.0)  # C major chord">Copy</button>
+                            <button class="copy-btn" data-copy="import sprechstimme as sp&#10;&#10;# Create and configure a synthesizer&#10;sp.new('lead')&#10;sp.create('lead', wavetype=sp.waves.sawtooth)&#10;&#10;# Play a single note&#10;sp.play('lead', 60, duration=0.5)&#10;&#10;# Play using note names&#10;sp.play('lead', 'C4', duration=0.5)&#10;&#10;# Play a chord&#10;sp.play('lead', [60, 64, 67], duration=1.0)">Copy</button>
                         </div>
                         <pre><code><span class="keyword">import</span> sprechstimme <span class="keyword">as</span> sp
 
@@ -807,14 +811,14 @@ sp.create(<span class="string">'synth'</span>, filters=[partial(custom_filter, a
 sp.new(<span class="string">'lead'</span>)
 sp.create(<span class="string">'lead'</span>, wavetype=sp.waves.sawtooth)
 
-<span class="comment"># Play a single note (MIDI number 60 = middle C)</span>
+<span class="comment"># Play a single note</span>
 sp.play(<span class="string">'lead'</span>, <span class="number">60</span>, duration=<span class="number">0.5</span>)
 
 <span class="comment"># Play using note names</span>
 sp.play(<span class="string">'lead'</span>, <span class="string">'C4'</span>, duration=<span class="number">0.5</span>)
 
 <span class="comment"># Play a chord</span>
-sp.play(<span class="string">'lead'</span>, [<span class="number">60</span>, <span class="number">64</span>, <span class="number">67</span>], duration=<span class="number">1.0</span>)  <span class="comment"># C major chord</span></code></pre>
+sp.play(<span class="string">'lead'</span>, [<span class="number">60</span>, <span class="number">64</span>, <span class="number">67</span>], duration=<span class="number">1.0</span>)</code></pre>
                     </div>
                 </div>
 
@@ -823,12 +827,11 @@ sp.play(<span class="string">'lead'</span>, [<span class="number">60</span>, <sp
                     <div class="code-example">
                         <div class="code-header">
                             <span>Python</span>
-                            <button class="copy-btn" data-copy="import sprechstimme as sp&#10;from functools import partial&#10;&#10;# Create a synth with filters&#10;sp.new('bass')&#10;sp.create(&#10;    'bass',&#10;    wavetype=sp.waves.sawtooth,&#10;    filters=[&#10;        partial(sp.filters.low_pass, cutoff=800),&#10;        partial(sp.filters.echo, delay=0.3, decay=0.5)&#10;    ],&#10;    envelope={&#10;        'attack': 0.01,&#10;        'decay': 0.1,&#10;        'sustain': 0.7,&#10;        'release': 0.2&#10;    }&#10;)&#10;&#10;sp.play('bass', 'A2', duration=1.0)">Copy</button>
+                            <button class="copy-btn" data-copy="import sprechstimme as sp&#10;from functools import partial&#10;&#10;sp.new('bass')&#10;sp.create(&#10;    'bass',&#10;    wavetype=sp.waves.sawtooth,&#10;    filters=[&#10;        partial(sp.filters.low_pass, cutoff=800),&#10;        partial(sp.filters.echo, delay=0.3, decay=0.5)&#10;    ],&#10;    envelope={&#10;        'attack': 0.01,&#10;        'decay': 0.1,&#10;        'sustain': 0.7,&#10;        'release': 0.2&#10;    }&#10;)&#10;&#10;sp.play('bass', 'A2', duration=1.0)">Copy</button>
                         </div>
                         <pre><code><span class="keyword">import</span> sprechstimme <span class="keyword">as</span> sp
 <span class="keyword">from</span> functools <span class="keyword">import</span> partial
 
-<span class="comment"># Create a synth with filters</span>
 sp.new(<span class="string">'bass'</span>)
 sp.create(
     <span class="string">'bass'</span>,
@@ -854,27 +857,20 @@ sp.play(<span class="string">'bass'</span>, <span class="string">'A2'</span>, du
                     <div class="code-example">
                         <div class="code-header">
                             <span>Python</span>
-                            <button class="copy-btn" data-copy="import sprechstimme as sp&#10;&#10;# Create synthesizers&#10;sp.new('lead')&#10;sp.create('lead', wavetype=sp.waves.square)&#10;sp.new('bass')&#10;sp.create('bass', wavetype=sp.waves.sawtooth)&#10;&#10;# Create a track at 120 BPM&#10;track = sp.Track(bpm=120)&#10;&#10;# Add notes (duration in beats)&#10;track.add('bass', notes='C2', duration=4)&#10;track.add('lead', notes='C4', duration=1)&#10;track.add('lead', notes='E4', duration=1)&#10;track.add('lead', notes='G4', duration=1)&#10;track.add('lead', notes='C5', duration=1)&#10;&#10;# Play the sequence&#10;track.play()&#10;track.export('my_composition.wav')">Copy</button>
+                            <button class="copy-btn" data-copy="import sprechstimme as sp&#10;&#10;sp.new('lead')&#10;sp.create('lead', wavetype=sp.waves.square)&#10;&#10;track = sp.Track(bpm=120)&#10;&#10;track.add('lead', notes='C4', duration=1)&#10;track.add('lead', notes='E4', duration=1)&#10;track.add('lead', notes='G4', duration=1)&#10;track.add('lead', notes='C5', duration=1)&#10;&#10;track.play()&#10;track.export('my_composition.wav')">Copy</button>
                         </div>
                         <pre><code><span class="keyword">import</span> sprechstimme <span class="keyword">as</span> sp
 
-<span class="comment"># Create synthesizers</span>
 sp.new(<span class="string">'lead'</span>)
 sp.create(<span class="string">'lead'</span>, wavetype=sp.waves.square)
-sp.new(<span class="string">'bass'</span>)
-sp.create(<span class="string">'bass'</span>, wavetype=sp.waves.sawtooth)
 
-<span class="comment"># Create a track at 120 BPM</span>
 track = sp.Track(bpm=<span class="number">120</span>)
 
-<span class="comment"># Add notes (duration in beats)</span>
-track.add(<span class="string">'bass'</span>, notes=<span class="string">'C2'</span>, duration=<span class="number">4</span>)
 track.add(<span class="string">'lead'</span>, notes=<span class="string">'C4'</span>, duration=<span class="number">1</span>)
 track.add(<span class="string">'lead'</span>, notes=<span class="string">'E4'</span>, duration=<span class="number">1</span>)
 track.add(<span class="string">'lead'</span>, notes=<span class="string">'G4'</span>, duration=<span class="number">1</span>)
 track.add(<span class="string">'lead'</span>, notes=<span class="string">'C5'</span>, duration=<span class="number">1</span>)
 
-<span class="comment"># Play the sequence</span>
 track.play()
 track.export(<span class="string">'my_composition.wav'</span>)</code></pre>
                     </div>
@@ -885,12 +881,11 @@ track.export(<span class="string">'my_composition.wav'</span>)</code></pre>
                     <div class="code-example">
                         <div class="code-header">
                             <span>Python</span>
-                            <button class="copy-btn" data-copy="import sprechstimme as sp&#10;from functools import partial&#10;&#10;# Create synthesizers&#10;sp.new('bass')&#10;sp.create('bass', wavetype=sp.waves.sawtooth,&#10;    filters=[partial(sp.filters.low_pass, cutoff=200)])&#10;&#10;sp.new('lead')&#10;sp.create('lead', wavetype=sp.waves.square)&#10;&#10;# Create a song at 120 BPM&#10;song = sp.Song(bpm=120)&#10;&#10;# Add bass notes at specific beat positions&#10;song.add('bass_track', 'bass', 'C2', beat_position=0, duration=2)&#10;song.add('bass_track', 'bass', 'G1', beat_position=2, duration=2)&#10;&#10;# Add melody with half-beat precision&#10;song.add('melody', 'lead', 'C4', beat_position=1, duration=0.5)&#10;song.add('melody', 'lead', 'E4', beat_position=1.5, duration=0.5)&#10;song.add('melody', 'lead', 'G4', beat_position=2, duration=1)&#10;&#10;# Add chords&#10;song.add_chord('chords', 'lead', 'C4', beat_position=0, duration=4)&#10;&#10;song.play()&#10;song.export('my_song.wav')">Copy</button>
+                            <button class="copy-btn" data-copy="import sprechstimme as sp&#10;from functools import partial&#10;&#10;sp.new('bass')&#10;sp.create('bass', wavetype=sp.waves.sawtooth,&#10;    filters=[partial(sp.filters.low_pass, cutoff=200)])&#10;&#10;sp.new('lead')&#10;sp.create('lead', wavetype=sp.waves.square)&#10;&#10;song = sp.Song(bpm=120)&#10;&#10;# Add bass notes at specific beat positions&#10;song.add('bass_track', 'bass', 'C2', beat_position=0, duration=2)&#10;song.add('bass_track', 'bass', 'G1', beat_position=2, duration=2)&#10;&#10;# Add melody with half-beat precision&#10;song.add('melody', 'lead', 'C4', beat_position=1, duration=0.5)&#10;song.add('melody', 'lead', 'E4', beat_position=1.5, duration=0.5)&#10;song.add('melody', 'lead', 'G4', beat_position=2, duration=1)&#10;&#10;song.play()&#10;song.export('my_song.wav')">Copy</button>
                         </div>
                         <pre><code><span class="keyword">import</span> sprechstimme <span class="keyword">as</span> sp
 <span class="keyword">from</span> functools <span class="keyword">import</span> partial
 
-<span class="comment"># Create synthesizers</span>
 sp.new(<span class="string">'bass'</span>)
 sp.create(<span class="string">'bass'</span>, wavetype=sp.waves.sawtooth,
     filters=[partial(sp.filters.low_pass, cutoff=<span class="number">200</span>)])
@@ -898,7 +893,6 @@ sp.create(<span class="string">'bass'</span>, wavetype=sp.waves.sawtooth,
 sp.new(<span class="string">'lead'</span>)
 sp.create(<span class="string">'lead'</span>, wavetype=sp.waves.square)
 
-<span class="comment"># Create a song at 120 BPM</span>
 song = sp.Song(bpm=<span class="number">120</span>)
 
 <span class="comment"># Add bass notes at specific beat positions</span>
@@ -910,18 +904,63 @@ song.add(<span class="string">'melody'</span>, <span class="string">'lead'</span
 song.add(<span class="string">'melody'</span>, <span class="string">'lead'</span>, <span class="string">'E4'</span>, beat_position=<span class="number">1.5</span>, duration=<span class="number">0.5</span>)
 song.add(<span class="string">'melody'</span>, <span class="string">'lead'</span>, <span class="string">'G4'</span>, beat_position=<span class="number">2</span>, duration=<span class="number">1</span>)
 
-<span class="comment"># Add chords</span>
-song.add_chord(<span class="string">'chords'</span>, <span class="string">'lead'</span>, <span class="string">'C4'</span>, beat_position=<span class="number">0</span>, duration=<span class="number">4</span>)
-
 song.play()
 song.export(<span class="string">'my_song.wav'</span>)</code></pre>
+                    </div>
+                </div>
+
+                <div class="example-card">
+                    <h3>Custom Waveform</h3>
+                    <div class="code-example">
+                        <div class="code-header">
+                            <span>Python</span>
+                            <button class="copy-btn" data-copy="import numpy as np&#10;import sprechstimme as sp&#10;&#10;def custom_wave(t, freq=440, amp=1.0):&#10;    # Combine sine wave with harmonics&#10;    fundamental = np.sin(2 * np.pi * freq * t)&#10;    harmonic2 = 0.5 * np.sin(4 * np.pi * freq * t)&#10;    harmonic3 = 0.3 * np.sin(6 * np.pi * freq * t)&#10;    return amp * (fundamental + harmonic2 + harmonic3)&#10;&#10;sp.new('custom')&#10;sp.create('custom', wavetype=custom_wave)&#10;sp.play('custom', 'A4', duration=1.0)">Copy</button>
+                        </div>
+                        <pre><code><span class="keyword">import</span> numpy <span class="keyword">as</span> np
+<span class="keyword">import</span> sprechstimme <span class="keyword">as</span> sp
+
+<span class="keyword">def</span> custom_wave(t, freq=<span class="number">440</span>, amp=<span class="number">1.0</span>):
+    <span class="comment"># Combine sine wave with harmonics</span>
+    fundamental = np.sin(<span class="number">2</span> * np.pi * freq * t)
+    harmonic2 = <span class="number">0.5</span> * np.sin(<span class="number">4</span> * np.pi * freq * t)
+    harmonic3 = <span class="number">0.3</span> * np.sin(<span class="number">6</span> * np.pi * freq * t)
+    <span class="keyword">return</span> amp * (fundamental + harmonic2 + harmonic3)
+
+sp.new(<span class="string">'custom'</span>)
+sp.create(<span class="string">'custom'</span>, wavetype=custom_wave)
+sp.play(<span class="string">'custom'</span>, <span class="string">'A4'</span>, duration=<span class="number">1.0</span>)</code></pre>
+                    </div>
+                </div>
+
+                <div class="example-card">
+                    <h3>Custom Filter</h3>
+                    <div class="code-example">
+                        <div class="code-header">
+                            <span>Python</span>
+                            <button class="copy-btn" data-copy="import numpy as np&#10;from functools import partial&#10;import sprechstimme as sp&#10;&#10;def tremolo(signal, sample_rate, rate=5, depth=0.5):&#10;    # Tremolo: amplitude modulation&#10;    t = np.arange(len(signal)) / sample_rate&#10;    modulator = 1 + depth * np.sin(2 * np.pi * rate * t)&#10;    return signal * modulator&#10;&#10;sp.new('synth')&#10;sp.create('synth',&#10;    wavetype=sp.waves.sine,&#10;    filters=[partial(tremolo, rate=6, depth=0.4)]&#10;)&#10;sp.play('synth', 'C4', duration=2.0)">Copy</button>
+                        </div>
+                        <pre><code><span class="keyword">import</span> numpy <span class="keyword">as</span> np
+<span class="keyword">from</span> functools <span class="keyword">import</span> partial
+<span class="keyword">import</span> sprechstimme <span class="keyword">as</span> sp
+
+<span class="keyword">def</span> tremolo(signal, sample_rate, rate=<span class="number">5</span>, depth=<span class="number">0.5</span>):
+    <span class="comment"># Tremolo: amplitude modulation</span>
+    t = np.arange(len(signal)) / sample_rate
+    modulator = <span class="number">1</span> + depth * np.sin(<span class="number">2</span> * np.pi * rate * t)
+    <span class="keyword">return</span> signal * modulator
+
+sp.new(<span class="string">'synth'</span>)
+sp.create(<span class="string">'synth'</span>,
+    wavetype=sp.waves.sine,
+    filters=[partial(tremolo, rate=<span class="number">6</span>, depth=<span class="number">0.4</span>)]
+)
+sp.play(<span class="string">'synth'</span>, <span class="string">'C4'</span>, duration=<span class="number">2.0</span>)</code></pre>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Footer -->
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
@@ -929,7 +968,7 @@ song.export(<span class="string">'my_song.wav'</span>)</code></pre>
                     <h4>Sprechstimme</h4>
                     <p>A modular Python synthesizer for creative audio programming</p>
                     <div class="social-links">
-                        <a href="https://github.com/breatn/Sprechstimme" target="_blank">GitHub</a>
+                        <a href="https://github.com/Sprechstimme-lib/Sprechstimme" target="_blank">GitHub</a>
                     </div>
                 </div>
                 <div class="footer-section">
@@ -943,8 +982,8 @@ song.export(<span class="string">'my_song.wav'</span>)</code></pre>
                 <div class="footer-section">
                     <h4>Resources</h4>
                     <ul>
-                        <li><a href="https://github.com/breatn/Sprechstimme" target="_blank">GitHub Repository</a></li>
-                        <li><a href="https://github.com/breatn/Sprechstimme/issues" target="_blank">Issue Tracker</a></li>
+                        <li><a href="https://github.com/Sprechstimme-lib/Sprechstimme" target="_blank">GitHub Repository</a></li>
+                        <li><a href="https://github.com/Sprechstimme-lib/Sprechstimme/issues" target="_blank">Issue Tracker</a></li>
                         <li><a href="#features">Features</a></li>
                     </ul>
                 </div>
@@ -954,7 +993,6 @@ song.export(<span class="string">'my_song.wav'</span>)</code></pre>
             </div>
         </div>
     </footer>
-
     <script src="script.js"></script>
 </body>
 </html>
