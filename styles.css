@@ -49,20 +49,25 @@ body {
 }
 
 .bitcount-grid-single-ink {
-      font-family: "Bitcount Grid Single Ink", system-ui;
-      font-optical-sizing: auto;
-      font-style: normal;
-      font-variation-settings:
-        "slnt" 0,
-        "CRSV" 0.5,
-        "ELSH" 0,
-        "ELXP" 0,
-        "SZP1" 0,
-        "SZP2" 0,
-        "XPN1" -1, /* reduce horizontal expansion */
-        "XPN2" -1,
-        "YPN1" -1, /* reduce vertical expansion */
-        "YPN2" -1;
+  font-family: "Bitcount Grid Single Ink", system-ui;
+  font-optical-sizing: auto;
+  font-style: normal;
+  font-variation-settings:
+    "slnt" 0,
+    "CRSV" 0.5,
+    "ELSH" 0,
+    "ELXP" 0,
+    "SZP1" 0,
+    "SZP2" 0,
+    "XPN1" -1,
+    "XPN2" -1,
+    "YPN1" -1,
+    "YPN2" -1;
+
+  letter-spacing: 0.12em;
+  line-height: 1.2;
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 
