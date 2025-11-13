@@ -57,11 +57,12 @@
 
             <div class="api-reference">
                 <h4>Quick API</h4>
-                <code>sp.play(note, duration)</code>
-                <code>sp.playChord(notes, duration)</code>
-                <code>sp.playMelody(notes, durations)</code>
-                <code>sp.setWave(type)</code>
-                <code>sp.setVolume(level)</code>
+                <code>sprechstimme.play(freq, duration)</code>
+                <code>sprechstimme.play(freq, duration, wave='sine')</code>
+                <p style="font-size: 0.85em; margin-top: 0.5em; color: #7D6E57;">
+                    freq: Frequency in Hz (e.g., 440 for A4)<br>
+                    duration: Length in seconds
+                </p>
             </div>
         </aside>
 
@@ -81,15 +82,16 @@
 
             <div class="editor-container">
                 <textarea id="code-editor" spellcheck="false"># Welcome to Sprechstimme Playground!
-# This runs in your browser with real audio playback
+# Real Python interpreter with the actual sprechstimme library from PyPI
 
-import sprechstimme as sp
+import sprechstimme
 
-# Play a single note
-sp.play('A4', duration=1.0)
+# Play a single tone at 440 Hz (A4) for 1 second
+sprechstimme.play(440, duration=1.0)
 
-# Try changing the note or duration!
-# Available notes: C4, D4, E4, F4, G4, A4, B4, C5, etc.</textarea>
+# Try other frequencies:
+# sprechstimme.play(523, duration=1.0)  # C5
+# sprechstimme.play(261, duration=1.0)  # C4</textarea>
             </div>
 
             <div class="output-container">
