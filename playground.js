@@ -168,11 +168,11 @@ if sounddevice_path.exists():
     # Read the file
     content = sounddevice_path.read_text()
 
-    # Comment out the line that raises the PortAudio error
+    # Replace the line that raises the PortAudio error with pass
     # This is around line 71: "raise OSError('PortAudio library not found')"
     content = content.replace(
         "raise OSError('PortAudio library not found')",
-        "# raise OSError('PortAudio library not found')  # Patched for Pyodide"
+        "pass  # Patched for Pyodide - PortAudio not available in browser"
     )
 
     # Write it back
