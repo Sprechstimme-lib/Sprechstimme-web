@@ -148,8 +148,41 @@ async function initPyodide() {
 
         log('Installing sprechstimme from PyPI...', 'info');
 
-        // Load micropip and install sprechstimme
+        // Load micropip and install sprechstimme dependencies
         await pyodide.loadPackage('micropip');
+
+        // Mock sounddevice module before installing sprechstimme
+        await pyodide.runPythonAsync(`
+import sys
+import types
+
+# Create a mock sounddevice module to prevent import errors
+sounddevice = types.ModuleType('sounddevice')
+sounddevice.__version__ = '0.4.6'
+sounddevice.PortAudioError = Exception
+
+# Mock functions that might be called
+def mock_play(*args, **kwargs):
+    pass
+
+def mock_wait(*args, **kwargs):
+    pass
+
+def mock_stop(*args, **kwargs):
+    pass
+
+sounddevice.play = mock_play
+sounddevice.wait = mock_wait
+sounddevice.stop = mock_stop
+sounddevice.default = types.SimpleNamespace(samplerate=44100)
+
+# Register the mock module
+sys.modules['sounddevice'] = sounddevice
+
+print("Mocked sounddevice module for browser environment")
+`);
+
+        log('Installing sprechstimme...', 'info');
         await pyodide.runPythonAsync(`
 import micropip
 await micropip.install('sprechstimme')
@@ -171,8 +204,10 @@ def _play_wav(wav_data):
     # Call JavaScript to play it
     js.playWavFromBase64(wav_base64)
 
-# Override sprechstimme's play method to capture audio
+# Import sprechstimme after mocking sounddevice
 import sprechstimme
+
+# Store original play function
 original_play = sprechstimme.play
 
 def custom_play(*args, **kwargs):
