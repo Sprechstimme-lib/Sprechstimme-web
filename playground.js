@@ -148,45 +148,40 @@ async function initPyodide() {
 
         log('Installing sprechstimme from PyPI...', 'info');
 
-        // Load micropip and install sprechstimme dependencies
+        // Load micropip and install sprechstimme with sounddevice patching
         await pyodide.loadPackage('micropip');
 
-        // Mock sounddevice module before installing sprechstimme
-        await pyodide.runPythonAsync(`
-import sys
-import types
-
-# Create a mock sounddevice module to prevent import errors
-sounddevice = types.ModuleType('sounddevice')
-sounddevice.__version__ = '0.4.6'
-sounddevice.PortAudioError = Exception
-
-# Mock functions that might be called
-def mock_play(*args, **kwargs):
-    pass
-
-def mock_wait(*args, **kwargs):
-    pass
-
-def mock_stop(*args, **kwargs):
-    pass
-
-sounddevice.play = mock_play
-sounddevice.wait = mock_wait
-sounddevice.stop = mock_stop
-sounddevice.default = types.SimpleNamespace(samplerate=44100)
-
-# Register the mock module
-sys.modules['sounddevice'] = sounddevice
-
-print("Mocked sounddevice module for browser environment")
-`);
-
-        log('Installing sprechstimme...', 'info');
         await pyodide.runPythonAsync(`
 import micropip
+import sys
+
+# Install sprechstimme (this will also install sounddevice)
 await micropip.install('sprechstimme')
+
+# Now patch the installed sounddevice module to prevent PortAudio error
+import pathlib
+
+# Find the sounddevice.py file in site-packages
+sounddevice_path = pathlib.Path('/lib/python3.11/site-packages/sounddevice.py')
+
+if sounddevice_path.exists():
+    # Read the file
+    content = sounddevice_path.read_text()
+
+    # Comment out the line that raises the PortAudio error
+    # This is around line 71: "raise OSError('PortAudio library not found')"
+    content = content.replace(
+        "raise OSError('PortAudio library not found')",
+        "# raise OSError('PortAudio library not found')  # Patched for Pyodide"
+    )
+
+    # Write it back
+    sounddevice_path.write_text(content)
+
+    print("Patched sounddevice to work in browser environment")
 `);
+
+        log('Setting up audio playback...', 'info');
 
         // Create helper functions for WAV playback
         await pyodide.runPythonAsync(`
@@ -204,7 +199,7 @@ def _play_wav(wav_data):
     # Call JavaScript to play it
     js.playWavFromBase64(wav_base64)
 
-# Import sprechstimme after mocking sounddevice
+# Import sprechstimme after patching sounddevice
 import sprechstimme
 
 # Store original play function
