@@ -1,75 +1,123 @@
-// Background waveform animation
-const bgCanvas = document.getElementById('waveform-bg');
-const bgCtx = bgCanvas.getContext('2d');
+// Hero Waveform Animation
+const heroCanvas = document.getElementById('hero-wave');
+if (heroCanvas) {
+    const ctx = heroCanvas.getContext('2d');
 
-function resizeCanvas() {
-    bgCanvas.width = window.innerWidth;
-    bgCanvas.height = window.innerHeight;
-}
+    function resizeHeroCanvas() {
+        const parent = heroCanvas.parentElement;
+        heroCanvas.width = parent.clientWidth - 64;
+        heroCanvas.height = parent.clientHeight - 64;
+    }
 
-resizeCanvas();
-window.addEventListener('resize', resizeCanvas);
+    resizeHeroCanvas();
+    window.addEventListener('resize', resizeHeroCanvas);
 
-let time = 0;
-const waves = [
-    { amplitude: 80, frequency: 0.002, phase: 0, color: 'rgba(99, 102, 241, 0.25)' },
-    { amplitude: 60, frequency: 0.003, phase: Math.PI / 3, color: 'rgba(59, 130, 246, 0.25)' },
-    { amplitude: 100, frequency: 0.0015, phase: Math.PI / 2, color: 'rgba(6, 182, 212, 0.25)' }
-];
+    let phase = 0;
 
-function drawWave(wave, offset) {
-    bgCtx.beginPath();
-    bgCtx.strokeStyle = wave.color;
-    bgCtx.lineWidth = 2;
+    function drawHeroWaveform() {
+        const width = heroCanvas.width;
+        const height = heroCanvas.height;
+        const centerY = height / 2;
+        const amplitude = height / 3;
 
-    for (let x = 0; x < bgCanvas.width; x++) {
-        const y = bgCanvas.height / 2 +
-            Math.sin(x * wave.frequency + time + wave.phase) * wave.amplitude +
-            offset;
+        ctx.clearRect(0, 0, width, height);
 
-        if (x === 0) {
-            bgCtx.moveTo(x, y);
-        } else {
-            bgCtx.lineTo(x, y);
+        // Draw grid lines
+        ctx.strokeStyle = '#E8DCC8';
+        ctx.lineWidth = 1;
+        for (let i = 0; i <= 4; i++) {
+            const y = (height / 4) * i;
+            ctx.beginPath();
+            ctx.moveTo(0, y);
+            ctx.lineTo(width, y);
+            ctx.stroke();
         }
+
+        // Draw waveform
+        ctx.beginPath();
+        ctx.strokeStyle = '#D17B47';
+        ctx.lineWidth = 3;
+
+        for (let x = 0; x < width; x++) {
+            const t = (x / width) * Math.PI * 4 + phase;
+            const y = centerY + Math.sin(t) * amplitude * 0.8;
+
+            if (x === 0) {
+                ctx.moveTo(x, y);
+            } else {
+                ctx.lineTo(x, y);
+            }
+        }
+
+        ctx.stroke();
+
+        phase += 0.02;
+        requestAnimationFrame(drawHeroWaveform);
     }
 
-    bgCtx.stroke();
+    drawHeroWaveform();
 }
 
-function animateBackground() {
-    bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
-    waves.forEach((wave, index) => {
-        const offset = (index - 1) * 100;
-        drawWave(wave, offset);
+// Tab Switching
+const tabButtons = document.querySelectorAll('.tab-btn');
+const examplePanels = document.querySelectorAll('.example-panel');
+
+tabButtons.forEach(button => {
+    button.addEventListener('click', () => {
+        const targetTab = button.getAttribute('data-tab');
+
+        // Update buttons
+        tabButtons.forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+
+        // Update panels
+        examplePanels.forEach(panel => {
+            panel.classList.remove('active');
+            if (panel.getAttribute('data-panel') === targetTab) {
+                panel.classList.add('active');
+            }
+        });
     });
-    time += 0.015;
-    requestAnimationFrame(animateBackground);
+});
+
+// Copy to Clipboard
+function copyToClipboard(button) {
+    const textToCopy = button.getAttribute('data-copy');
+    const decodedText = textToCopy.replace(/&#10;/g, '\n');
+
+    navigator.clipboard.writeText(decodedText).then(() => {
+        const originalText = button.textContent;
+        button.textContent = 'Copied!';
+        button.classList.add('copied');
+
+        setTimeout(() => {
+            button.textContent = originalText;
+            button.classList.remove('copied');
+        }, 2000);
+    }).catch(err => {
+        console.error('Failed to copy:', err);
+    });
 }
 
-animateBackground();
+// Install copy button
+const installCopyBtn = document.querySelector('.install-copy');
+if (installCopyBtn) {
+    installCopyBtn.addEventListener('click', function() {
+        copyToClipboard(this);
+    });
+}
 
-// Scroll progress indicator
-window.addEventListener('scroll', () => {
-    const scrollProgress = document.querySelector('.scroll-progress');
-    const windowHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-    const scrolled = (window.scrollY / windowHeight) * 100;
-    scrollProgress.style.width = scrolled + '%';
+// Code example copy buttons
+const copyCodeButtons = document.querySelectorAll('.copy-code');
+copyCodeButtons.forEach(button => {
+    button.addEventListener('click', function() {
+        copyToClipboard(this);
+    });
 });
 
-// Navbar scroll effect
-const navbar = document.querySelector('.navbar');
-window.addEventListener('scroll', () => {
-    if (window.pageYOffset > 100) {
-        navbar.classList.add('scrolled');
-    } else {
-        navbar.classList.remove('scrolled');
-    }
-});
-
-// Smooth scrolling for anchor links
+// Smooth Scrolling
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
+    anchor.addEventListener('click', function(e) {
         const href = this.getAttribute('href');
         if (href === '#' || !href) return;
 
@@ -82,285 +130,75 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
                 top: offsetTop,
                 behavior: 'smooth'
             });
-
-            document.querySelectorAll('.nav-link').forEach(link => {
-                link.classList.remove('active');
-            });
-            if (this.classList.contains('nav-link')) {
-                this.classList.add('active');
-            }
         }
     });
 });
 
-// Copy to clipboard functionality
-document.querySelectorAll('.copy-btn').forEach(btn => {
-    btn.addEventListener('click', async function() {
-        const textToCopy = this.getAttribute('data-copy');
-        try {
-            await navigator.clipboard.writeText(textToCopy);
-            const originalText = this.textContent;
-            this.textContent = 'Copied!';
-            this.classList.add('copied');
-            setTimeout(() => {
-                this.textContent = originalText;
-                this.classList.remove('copied');
-            }, 2000);
-        } catch (err) {
-            console.error('Failed to copy:', err);
-        }
-    });
-});
-
-// Intersection Observer for scroll animations
+// Intersection Observer for animations
 const observerOptions = {
     threshold: 0.1,
-    rootMargin: '0px 0px -50px 0px'
+    rootMargin: '0px 0px -100px 0px'
 };
 
-const scrollObserver = new IntersectionObserver((entries) => {
+const fadeInObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
-            entry.target.classList.add('visible');
+            entry.target.style.opacity = '1';
+            entry.target.style.transform = 'translateY(0)';
         }
     });
 }, observerOptions);
 
-document.querySelectorAll('.feature-card, .example-card').forEach(el => {
-    scrollObserver.observe(el);
+// Animate capability cards on scroll
+const capabilityCards = document.querySelectorAll('.capability-card');
+capabilityCards.forEach((card, index) => {
+    card.style.opacity = '0';
+    card.style.transform = 'translateY(30px)';
+    card.style.transition = `opacity 0.6s ease ${index * 0.1}s, transform 0.6s ease ${index * 0.1}s`;
+    fadeInObserver.observe(card);
 });
 
-// Mini waveform visualizations in synthesis section
-const miniWaveforms = document.querySelectorAll('.mini-waveform');
+// Animate doc cards on scroll
+const docCards = document.querySelectorAll('.doc-card');
+docCards.forEach((card, index) => {
+    card.style.opacity = '0';
+    card.style.transform = 'translateY(30px)';
+    card.style.transition = `opacity 0.6s ease ${index * 0.1}s, transform 0.6s ease ${index * 0.1}s`;
+    fadeInObserver.observe(card);
+});
 
-function drawMiniWaveform(canvas, type) {
-    const ctx = canvas.getContext('2d');
-    const width = canvas.width;
-    const height = canvas.height;
-    const centerY = height / 2;
-    const amplitude = height / 3;
-
-    ctx.clearRect(0, 0, width, height);
-
-    // Draw grid
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
-    ctx.lineWidth = 1;
-    for (let i = 0; i < 3; i++) {
-        const y = (height / 2) * i;
-        ctx.beginPath();
-        ctx.moveTo(0, y);
-        ctx.lineTo(width, y);
-        ctx.stroke();
-    }
-
-    // Draw waveform
-    ctx.strokeStyle = '#06b6d4';
-    ctx.lineWidth = 2.5;
-    ctx.beginPath();
-
-    for (let x = 0; x < width; x++) {
-        let y;
-        const t = x / width * Math.PI * 3;
-
-        switch(type) {
-            case 'sine':
-                y = centerY + Math.sin(t) * amplitude;
-                break;
-            case 'square':
-                y = centerY + (Math.sin(t) >= 0 ? amplitude : -amplitude);
-                break;
-            case 'sawtooth':
-                y = centerY + ((t % (Math.PI * 2)) / (Math.PI * 2) * 2 - 1) * amplitude;
-                break;
-            case 'triangle':
-                const mod = t % (Math.PI * 2);
-                if (mod < Math.PI) {
-                    y = centerY + (mod / Math.PI * 2 - 1) * amplitude;
-                } else {
-                    y = centerY + (3 - mod / Math.PI * 2) * amplitude;
-                }
-                break;
-            case 'fm':
-                // FM synthesis simulation
-                const carrier = Math.sin(t * 2);
-                const modulator = Math.sin(t * 5);
-                y = centerY + Math.sin(t * 2 + modulator * 2) * amplitude;
-                break;
-            case 'wavetable':
-                // Wavetable morphing simulation
-                const wave1 = Math.sin(t);
-                const wave2 = Math.sin(t * 2);
-                const morph = (Math.sin(t / 2) + 1) / 2;
-                y = centerY + (wave1 * (1 - morph) + wave2 * morph) * amplitude;
-                break;
-            case 'noise':
-                // Noise visualization
-                y = centerY + (Math.random() * 2 - 1) * amplitude * 0.6;
-                break;
-            default:
-                y = centerY + Math.sin(t) * amplitude;
-        }
-
-        if (x === 0) {
-            ctx.moveTo(x, y);
-        } else {
-            ctx.lineTo(x, y);
-        }
-    }
-
-    ctx.stroke();
-}
-
-function initMiniWaveforms() {
-    miniWaveforms.forEach(canvas => {
-        const container = canvas.parentElement;
-        canvas.width = container.clientWidth - 40;
-        canvas.height = 140;
-
-        const type = canvas.getAttribute('data-type');
-        drawMiniWaveform(canvas, type);
-    });
-}
-
-if (miniWaveforms.length > 0) {
-    initMiniWaveforms();
-    window.addEventListener('resize', initMiniWaveforms);
-}
-
-// Active navigation based on scroll position
-const sections = document.querySelectorAll('section[id]');
-
-function updateActiveNav() {
-    const scrollY = window.pageYOffset;
-
-    sections.forEach(section => {
-        const sectionHeight = section.offsetHeight;
-        const sectionTop = section.offsetTop - 150;
-        const sectionId = section.getAttribute('id');
-
-        if (scrollY > sectionTop && scrollY <= sectionTop + sectionHeight) {
-            document.querySelectorAll('.nav-link').forEach(link => {
-                link.classList.remove('active');
-                if (link.getAttribute('href') === `#${sectionId}`) {
-                    link.classList.add('active');
-                }
-            });
-        }
-    });
-}
-
-window.addEventListener('scroll', updateActiveNav);
-
-// Add smooth reveal animation to cards on scroll
-const revealCards = () => {
-    const cards = document.querySelectorAll('.feature-card, .example-card, .analysis-card, .synthesis-card, .doc-card');
-
-    cards.forEach(card => {
-        const cardTop = card.getBoundingClientRect().top;
-        const windowHeight = window.innerHeight;
-
-        if (cardTop < windowHeight - 100) {
-            card.classList.add('visible');
-        }
-    });
-};
-
-window.addEventListener('scroll', revealCards);
-window.addEventListener('load', revealCards);
-
-// Parallax effect for hero section
-const hero = document.querySelector('.hero');
-if (hero) {
-    window.addEventListener('scroll', () => {
-        const scrolled = window.pageYOffset;
-        const heroContent = hero.querySelector('.hero-content');
-        if (heroContent && scrolled < window.innerHeight) {
-            heroContent.style.transform = `translateY(${scrolled * 0.3}px)`;
-            heroContent.style.opacity = 1 - (scrolled / window.innerHeight) * 0.5;
-        }
-    });
-}
-
-// Add hover effect to stats
-const statItems = document.querySelectorAll('.stat-item');
-statItems.forEach(item => {
-    item.addEventListener('mouseenter', function() {
-        this.style.transform = 'scale(1.1)';
-        this.style.transition = 'transform 0.3s ease';
+// Stat box hover effects
+const statBoxes = document.querySelectorAll('.stat-box');
+statBoxes.forEach(box => {
+    box.addEventListener('mouseenter', function() {
+        this.style.transform = 'translateY(-8px) scale(1.05)';
     });
 
-    item.addEventListener('mouseleave', function() {
-        this.style.transform = 'scale(1)';
+    box.addEventListener('mouseleave', function() {
+        this.style.transform = 'translateY(0) scale(1)';
     });
 });
 
-// Animate stats numbers on scroll
-const animateStats = () => {
-    const statsBar = document.querySelector('.stats-bar');
-    if (!statsBar) return;
+// Feature pill animations
+const featurePills = document.querySelectorAll('.feature-pill');
+featurePills.forEach((pill, index) => {
+    pill.style.opacity = '0';
+    pill.style.transform = 'scale(0.8)';
+    pill.style.transition = `opacity 0.4s ease ${index * 0.05}s, transform 0.4s ease ${index * 0.05}s`;
+});
 
-    const statsTop = statsBar.getBoundingClientRect().top;
-    const windowHeight = window.innerHeight;
-
-    if (statsTop < windowHeight - 100) {
-        statsBar.classList.add('stats-animated');
-    }
-};
-
-window.addEventListener('scroll', animateStats);
-window.addEventListener('load', animateStats);
-
-// Enhanced button hover effects
-const buttons = document.querySelectorAll('.btn');
-buttons.forEach(button => {
-    button.addEventListener('mousemove', (e) => {
-        const rect = button.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-
-        button.style.setProperty('--mouse-x', `${x}px`);
-        button.style.setProperty('--mouse-y', `${y}px`);
+const pillObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.style.opacity = '1';
+            entry.target.style.transform = 'scale(1)';
+        }
     });
-});
+}, { threshold: 0.5 });
 
-// Smooth fade-in for images and media
-const mediaElements = document.querySelectorAll('img, video, canvas');
-mediaElements.forEach(element => {
-    element.style.opacity = '0';
-    element.style.transition = 'opacity 0.5s ease';
+featurePills.forEach(pill => pillObserver.observe(pill));
 
-    if (element.complete || element.tagName === 'CANVAS') {
-        element.style.opacity = '1';
-    } else {
-        element.addEventListener('load', () => {
-            element.style.opacity = '1';
-        });
-    }
-});
-
-// Add ripple effect to copy buttons
-document.querySelectorAll('.copy-btn').forEach(btn => {
-    btn.addEventListener('click', function(e) {
-        const ripple = document.createElement('span');
-        ripple.classList.add('ripple');
-        this.appendChild(ripple);
-
-        const rect = this.getBoundingClientRect();
-        const size = Math.max(rect.width, rect.height);
-        const x = e.clientX - rect.left - size / 2;
-        const y = e.clientY - rect.top - size / 2;
-
-        ripple.style.width = ripple.style.height = size + 'px';
-        ripple.style.left = x + 'px';
-        ripple.style.top = y + 'px';
-
-        setTimeout(() => {
-            ripple.remove();
-        }, 600);
-    });
-});
-
-// Log loaded message
-console.log('%c🎵 Sprechstimme', 'font-size: 24px; font-weight: bold; color: #6366f1;');
-console.log('%cProfessional Python Music Synthesis Library', 'font-size: 14px; color: #06b6d4;');
-console.log('%cVisit: https://github.com/Sprechstimme-lib/Sprechstimme', 'font-size: 12px; color: #a8a8c0;');
+// Console welcome message
+console.log('%c🎵 Sprechstimme', 'font-size: 24px; font-weight: bold; color: #D17B47;');
+console.log('%cProfessional Python Music Synthesis', 'font-size: 14px; color: #7D6E57;');
+console.log('%cVisit: https://github.com/Sprechstimme-lib/Sprechstimme', 'font-size: 12px; color: #6B5D4F;');
