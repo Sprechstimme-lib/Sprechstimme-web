@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sprechstimme Playground – Try It Live</title>
+    <meta name="description" content="Interactive playground to test Sprechstimme code with live audio playback in your browser">
+
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32-new.png">
+    <link rel="icon" type="image/png" sizes="64x64" href="/assets/favicon-64x64-new.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="playground.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="playground-header">
+        <div class="header-content">
+            <a href="index.html" class="logo-link">
+                <img src="/assets/favicon-64x64-new.png" alt="Sprechstimme" class="logo-image">
+                <span class="logo-text">Sprechstimme Playground</span>
+            </a>
+            <a href="index.html" class="back-link">← Back to Home</a>
+        </div>
+    </header>
+
+    <!-- Main Playground -->
+    <main class="playground-main">
+        <!-- Sidebar with Examples -->
+        <aside class="examples-sidebar">
+            <h3>Examples</h3>
+            <div class="example-list">
+                <button class="example-btn active" data-example="basic">Basic Note</button>
+                <button class="example-btn" data-example="chord">Play Chord</button>
+                <button class="example-btn" data-example="melody">Simple Melody</button>
+                <button class="example-btn" data-example="synthesis">FM Synthesis</button>
+                <button class="example-btn" data-example="arpeggio">Arpeggio</button>
+                <button class="example-btn" data-example="sequence">Sequence</button>
+            </div>
+
+            <div class="info-panel">
+                <h4>How It Works</h4>
+                <p>This playground runs directly in your browser using Web Audio API. Sound plays immediately!</p>
+                <ul>
+                    <li>Click examples to load code</li>
+                    <li>Edit code in the editor</li>
+                    <li>Click "Run Code" to hear it</li>
+                    <li>Volume control on the right</li>
+                </ul>
+            </div>
+
+            <div class="api-reference">
+                <h4>Quick API</h4>
+                <code>sp.play(note, duration)</code>
+                <code>sp.playChord(notes, duration)</code>
+                <code>sp.playMelody(notes, durations)</code>
+                <code>sp.setWave(type)</code>
+                <code>sp.setVolume(level)</code>
+            </div>
+        </aside>
+
+        <!-- Editor Area -->
+        <div class="editor-area">
+            <div class="editor-toolbar">
+                <div class="toolbar-left">
+                    <span class="file-name">playground.py</span>
+                </div>
+                <div class="toolbar-right">
+                    <button id="clear-btn" class="toolbar-btn">Clear Output</button>
+                    <button id="run-btn" class="run-btn">
+                        <span>▶</span> Run Code
+                    </button>
+                </div>
+            </div>
+
+            <div class="editor-container">
+                <textarea id="code-editor" spellcheck="false"># Welcome to Sprechstimme Playground!
+# This runs in your browser with real audio playback
+
+import sprechstimme as sp
+
+# Play a single note
+sp.play('A4', duration=1.0)
+
+# Try changing the note or duration!
+# Available notes: C4, D4, E4, F4, G4, A4, B4, C5, etc.</textarea>
+            </div>
+
+            <div class="output-container">
+                <div class="output-header">
+                    <span>Output</span>
+                    <div class="audio-indicator">
+                        <span class="indicator-dot"></span>
+                        <span id="audio-status">Ready</span>
+                    </div>
+                </div>
+                <div id="output-display" class="output-display">
+                    <span class="output-placeholder">Click "Run Code" to execute and hear the audio...</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controls Panel -->
+        <aside class="controls-panel">
+            <h3>Audio Controls</h3>
+
+            <div class="control-group">
+                <label for="volume-control">Volume</label>
+                <input type="range" id="volume-control" min="0" max="100" value="50">
+                <span id="volume-value">50%</span>
+            </div>
+
+            <div class="control-group">
+                <label for="wave-select">Waveform</label>
+                <select id="wave-select">
+                    <option value="sine">Sine</option>
+                    <option value="square">Square</option>
+                    <option value="sawtooth">Sawtooth</option>
+                    <option value="triangle">Triangle</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <button id="stop-btn" class="stop-btn">Stop All Audio</button>
+            </div>
+
+            <div class="visualizer-container">
+                <h4>Visualizer</h4>
+                <canvas id="visualizer"></canvas>
+            </div>
+
+            <div class="info-box">
+                <h4>Playing Notes</h4>
+                <div id="current-notes" class="notes-display">
+                    <span class="placeholder">No notes playing</span>
+                </div>
+            </div>
+        </aside>
+    </main>
+
+    <!-- Footer -->
+    <footer class="playground-footer">
+        <p>Sprechstimme Web Playground – Powered by Web Audio API</p>
+        <a href="https://github.com/Sprechstimme-lib/Sprechstimme" target="_blank">View Full Library on GitHub</a>
+    </footer>
+
+    <script src="playground.js"></script>
+</body>
+</html>
