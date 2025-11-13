@@ -99,80 +99,40 @@ function stopAllAudio() {
     log('All audio stopped', 'info');
 }
 
-// Sprechstimme API for Python (exposed to Pyodide)
-window.SprechstimmeAPI = {
-    play: function(note, duration = 1.0) {
-        const freq = noteFrequencies[note.toUpperCase()];
-        if (!freq) {
-            log(`Error: Unknown note "${note}"`, 'error');
-            return;
+// WAV file playback function (exposed to Pyodide)
+window.playWavFromBase64 = async function(base64Data) {
+    try {
+        initAudio();
+
+        // Decode base64 to ArrayBuffer
+        const binaryString = atob(base64Data);
+        const bytes = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+            bytes[i] = binaryString.charCodeAt(i);
         }
-        playTone(freq, duration, note);
-        log(`♪ Playing ${note} (${freq.toFixed(2)} Hz) for ${duration}s`, 'success');
-    },
 
-    playChord: function(notes, duration = 1.0) {
-        log(`♪ Playing chord: [${notes.join(', ')}] for ${duration}s`, 'success');
-        notes.forEach(note => {
-            const freq = noteFrequencies[note.toUpperCase()];
-            if (freq) {
-                playTone(freq, duration, note, 0.3);
-            }
-        });
-    },
+        // Decode audio data
+        const audioBuffer = await audioContext.decodeAudioData(bytes.buffer);
 
-    playMelody: function(notes, durations) {
-        if (notes.length !== durations.length) {
-            log('Error: notes and durations must have same length', 'error');
-            return;
-        }
-        log(`♪ Playing melody: ${notes.length} notes`, 'success');
-        let time = 0;
-        notes.forEach((note, i) => {
-            const freq = noteFrequencies[note.toUpperCase()];
-            const dur = durations[i];
-            if (freq) {
-                setTimeout(() => {
-                    playTone(freq, dur, note);
-                }, time * 1000);
-            }
-            time += dur;
-        });
-    },
+        // Create buffer source
+        const source = audioContext.createBufferSource();
+        source.buffer = audioBuffer;
 
-    setWave: function(waveType) {
-        currentWaveType = waveType;
-        document.getElementById('wave-select').value = waveType;
-        log(`Waveform changed to: ${waveType}`, 'info');
-    },
+        // Connect to master gain
+        source.connect(masterGain);
 
-    setVolume: function(volume) {
-        currentVolume = Math.max(0, Math.min(1, volume));
-        if (masterGain) {
-            masterGain.gain.value = currentVolume;
-        }
-        const slider = document.getElementById('volume-control');
-        slider.value = currentVolume * 100;
-        document.getElementById('volume-value').textContent = Math.round(currentVolume * 100) + '%';
-        log(`Volume set to: ${Math.round(currentVolume * 100)}%`, 'info');
-    },
+        // Play
+        source.start(0);
+        setAudioStatus('playing');
+        log('♪ Playing audio from sprechstimme', 'success');
 
-    sequence: function(pattern, tempo = 120) {
-        const beatDuration = 60 / tempo;
-        let time = 0;
-        log(`♪ Playing sequence at ${tempo} BPM`, 'success');
+        source.onended = () => {
+            setAudioStatus('ready');
+        };
 
-        pattern.forEach(item => {
-            const note = item.note || item.get('note');
-            const duration = item.duration || item.get('duration');
-
-            if (Array.isArray(note)) {
-                setTimeout(() => window.SprechstimmeAPI.playChord(note, duration), time * 1000);
-            } else {
-                setTimeout(() => window.SprechstimmeAPI.play(note, duration), time * 1000);
-            }
-            time += duration;
-        });
+    } catch (error) {
+        log(`Error playing audio: ${error.message}`, 'error');
+        console.error('WAV playback error:', error);
     }
 };
 
@@ -186,68 +146,69 @@ async function initPyodide() {
             indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.24.1/full/'
         });
 
-        // Create the sprechstimme module in Python
+        log('Installing sprechstimme from PyPI...', 'info');
+
+        // Load micropip and install sprechstimme
+        await pyodide.loadPackage('micropip');
+        await pyodide.runPythonAsync(`
+import micropip
+await micropip.install('sprechstimme')
+`);
+
+        // Create helper functions for WAV playback
         await pyodide.runPythonAsync(`
 import js
 from pyodide.ffi import to_js
 import sys
-import types
+import io
+import base64
 
-# Define functions that will be in the module
-def play(note, duration=1.0):
-    """Play a single note"""
-    js.SprechstimmeAPI.play(note, duration)
+# Helper function to save and play WAV
+def _play_wav(wav_data):
+    """Internal function to save and play WAV data"""
+    # Convert WAV bytes to base64
+    wav_base64 = base64.b64encode(wav_data).decode('utf-8')
+    # Call JavaScript to play it
+    js.playWavFromBase64(wav_base64)
 
-def playChord(notes, duration=1.0):
-    """Play multiple notes simultaneously"""
-    notes_js = to_js(notes)
-    js.SprechstimmeAPI.playChord(notes_js, duration)
+# Override sprechstimme's play method to capture audio
+import sprechstimme
+original_play = sprechstimme.play
 
-def playMelody(notes, durations):
-    """Play a sequence of notes"""
-    notes_js = to_js(notes)
-    durations_js = to_js(durations)
-    js.SprechstimmeAPI.playMelody(notes_js, durations_js)
+def custom_play(*args, **kwargs):
+    """Wrapper that captures WAV output and plays it"""
+    # Create a BytesIO buffer to capture output
+    buffer = io.BytesIO()
 
-def setWave(wave_type):
-    """Set the waveform type: sine, square, sawtooth, triangle"""
-    js.SprechstimmeAPI.setWave(wave_type)
+    # If no output file is specified, set buffer as output
+    if 'output' not in kwargs:
+        kwargs['output'] = buffer
 
-def setVolume(volume):
-    """Set volume (0.0 to 1.0)"""
-    js.SprechstimmeAPI.setVolume(volume)
+    # Call original function
+    result = original_play(*args, **kwargs)
 
-def sequence(pattern, tempo=120):
-    """Play a sequence with tempo"""
-    # Convert Python dicts to JS objects
-    pattern_js = to_js([
-        {'note': to_js(item['note']) if isinstance(item['note'], list) else item['note'],
-         'duration': item['duration']}
-        for item in pattern
-    ])
-    js.SprechstimmeAPI.sequence(pattern_js, tempo)
+    # If we captured to buffer, play it
+    if kwargs.get('output') == buffer:
+        buffer.seek(0)
+        wav_data = buffer.read()
+        if len(wav_data) > 0:
+            _play_wav(wav_data)
 
-# Create a proper module
-sprechstimme = types.ModuleType('sprechstimme')
-sprechstimme.__doc__ = 'Sprechstimme - Browser-based audio synthesis'
-sprechstimme.play = play
-sprechstimme.playChord = playChord
-sprechstimme.playMelody = playMelody
-sprechstimme.setWave = setWave
-sprechstimme.setVolume = setVolume
-sprechstimme.sequence = sequence
+    return result
 
-# Register it
-sys.modules['sprechstimme'] = sprechstimme
+# Patch sprechstimme.play
+sprechstimme.play = custom_play
 `);
 
         isPyodideReady = true;
         log('✓ Python environment ready!', 'success');
-        log('You can now run Python code with real syntax', 'info');
+        log('✓ Sprechstimme library installed from PyPI', 'success');
+        log('You can now use the real sprechstimme library!', 'info');
         setAudioStatus('ready');
 
     } catch (error) {
         log(`Failed to load Python: ${error.message}`, 'error');
+        console.error('Pyodide initialization error:', error);
         setAudioStatus('error');
     }
 }
@@ -309,64 +270,77 @@ output
 const examples = {
     basic: `# Welcome to Sprechstimme Playground!
 # Real Python interpreter powered by Pyodide
+# Using the actual sprechstimme library from PyPI
 
-import sprechstimme as sp
+import sprechstimme
 
-# Play a single note
-sp.play('A4', duration=1.0)
+# Play a single tone at 440 Hz (A4) for 1 second
+sprechstimme.play(440, duration=1.0)
 
-# Try changing the note or duration!
-# Available notes: C3, D3, E3, F3, G3, A3, B3, C4, D4, E4, F4, G4, A4, B4, C5, etc.`,
+# Try other frequencies:
+# sprechstimme.play(523, duration=1.0)  # C5
+# sprechstimme.play(261, duration=1.0)  # C4`,
 
-    chord: `import sprechstimme as sp
+    chord: `import sprechstimme
 
-# Play a C major chord
-sp.playChord(['C4', 'E4', 'G4'], duration=2.0)
+# Play multiple frequencies (C major chord)
+# C4 = 261.63 Hz, E4 = 329.63 Hz, G4 = 392.00 Hz
+sprechstimme.play(261.63, duration=2.0)
+sprechstimme.play(329.63, duration=2.0)
+sprechstimme.play(392.00, duration=2.0)
 
-# Try other chords:
-# sp.playChord(['F4', 'A4', 'C5'], duration=2.0)  # F major
-# sp.playChord(['G4', 'B4', 'D5'], duration=2.0)  # G major`,
+print("Playing C major chord!")`,
 
-    melody: `import sprechstimme as sp
+    melody: `import sprechstimme
 
-# Play a simple melody
-notes = ['C4', 'D4', 'E4', 'F4', 'G4', 'A4', 'B4', 'C5']
-durations = [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 1.0]
+# Play a simple melody (C major scale)
+# Each call generates a separate audio file
+notes = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25]
+# C4, D4, E4, F4, G4, A4, B4, C5
 
-sp.playMelody(notes, durations)`,
+for freq in notes:
+    sprechstimme.play(freq, duration=0.5)
 
-    synthesis: `import sprechstimme as sp
+print("Melody generated! (All notes will play)")`,
 
-# Try different waveforms
-sp.setWave('sine')
-sp.play('A4', duration=1.0)
+    synthesis: `import sprechstimme
 
-# sp.setWave('square')  # Uncomment to try!
-# sp.play('A4', duration=1.0)
+# Basic sine wave synthesis
+# Generate a 440 Hz tone (A4)
+sprechstimme.play(440, duration=1.0)
 
-# sp.setWave('sawtooth')
-# sp.play('A4', duration=1.0)`,
+print("Playing 440 Hz sine wave")
 
-    arpeggio: `import sprechstimme as sp
+# The real sprechstimme library generates WAV files
+# that are played back in your browser!`,
+
+    arpeggio: `import sprechstimme
 
 # C major arpeggio
-notes = ['C4', 'E4', 'G4', 'C5', 'G4', 'E4', 'C4']
-durations = [0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.6]
+# C4, E4, G4, C5, G4, E4, C4
+arpeggio = [261.63, 329.63, 392.00, 523.25, 392.00, 329.63, 261.63]
 
-sp.playMelody(notes, durations)`,
+for freq in arpeggio:
+    sprechstimme.play(freq, duration=0.3)
 
-    sequence: `import sprechstimme as sp
+print("Arpeggio complete!")`,
+
+    sequence: `import sprechstimme
 
 # Create a musical sequence
-pattern = [
-    {'note': 'C4', 'duration': 0.5},
-    {'note': ['C4', 'E4', 'G4'], 'duration': 0.5},
-    {'note': 'E4', 'duration': 0.5},
-    {'note': ['C4', 'E4', 'G4'], 'duration': 0.5},
-    {'note': 'G4', 'duration': 1.0}
+# Play a simple pattern
+sequence = [
+    (261.63, 0.5),  # C4
+    (329.63, 0.5),  # E4
+    (392.00, 0.5),  # G4
+    (523.25, 1.0),  # C5
 ]
 
-sp.sequence(pattern, tempo=120)`
+print("Playing sequence...")
+for freq, duration in sequence:
+    sprechstimme.play(freq, duration=duration)
+
+print("Sequence complete!")`
 };
 
 // UI Helper Functions
