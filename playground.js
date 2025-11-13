@@ -272,10 +272,13 @@ function executeCode() {
                     // Convert Python syntax to JavaScript
                     const jsValue = pythonToJs(varValue);
 
+                    // Evaluate the JavaScript expression to get the actual value
+                    const evaluatedValue = eval(jsValue);
+
                     // Store in context and make it available
-                    context[varName] = jsValue;
+                    context[varName] = evaluatedValue;
                     // Also make it globally available for eval
-                    window[varName] = jsValue;
+                    window[varName] = evaluatedValue;
                 }
                 // Handle sp.* commands
                 else if (trimmed.startsWith('sp.')) {
@@ -308,18 +311,17 @@ function executeCode() {
 function pythonToJs(pythonCode) {
     let js = pythonCode;
 
-    // Convert Python lists to JavaScript arrays (already compatible)
-    // Convert Python dicts to JavaScript objects
-    js = js.replace(/\{(['"])\s*(\w+)\1\s*:/g, '{$2:'); // {'key': -> {key:
-    js = js.replace(/:\s*(['"])([^'"]+)\1/g, ': "$2"'); // Ensure string values are quoted
-
-    // Convert Python True/False to JavaScript
+    // Convert Python True/False/None to JavaScript
     js = js.replace(/\bTrue\b/g, 'true');
     js = js.replace(/\bFalse\b/g, 'false');
     js = js.replace(/\bNone\b/g, 'null');
 
-    // Handle Python keyword arguments (e.g., duration=1.0)
-    // These are already compatible with JavaScript
+    // Convert Python dictionary keys from quoted to unquoted
+    // Handles: {'key': value} -> {key: value} or {"key": value} -> {key: value}
+    js = js.replace(/\{['"](\w+)['"]\s*:/g, '{$1:');
+    js = js.replace(/,\s*['"](\w+)['"]\s*:/g, ', $1:');
+
+    // Handle Python keyword arguments (duration=1.0) - already compatible with JS
 
     return js;
 }
