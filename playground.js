@@ -191,54 +191,54 @@ async function initPyodide() {
 import js
 from pyodide.ffi import to_js
 import sys
+import types
 
-class SprechstimmeModule:
-    """Sprechstimme module for browser-based audio synthesis"""
+# Define functions that will be in the module
+def play(note, duration=1.0):
+    """Play a single note"""
+    js.SprechstimmeAPI.play(note, duration)
 
-    def __init__(self):
-        self._api = js.SprechstimmeAPI
+def playChord(notes, duration=1.0):
+    """Play multiple notes simultaneously"""
+    notes_js = to_js(notes)
+    js.SprechstimmeAPI.playChord(notes_js, duration)
 
-    def play(self, note, duration=1.0):
-        """Play a single note"""
-        self._api.play(note, duration)
+def playMelody(notes, durations):
+    """Play a sequence of notes"""
+    notes_js = to_js(notes)
+    durations_js = to_js(durations)
+    js.SprechstimmeAPI.playMelody(notes_js, durations_js)
 
-    def playChord(self, notes, duration=1.0):
-        """Play multiple notes simultaneously"""
-        notes_js = to_js(notes)
-        self._api.playChord(notes_js, duration)
+def setWave(wave_type):
+    """Set the waveform type: sine, square, sawtooth, triangle"""
+    js.SprechstimmeAPI.setWave(wave_type)
 
-    def playMelody(self, notes, durations):
-        """Play a sequence of notes"""
-        notes_js = to_js(notes)
-        durations_js = to_js(durations)
-        self._api.playMelody(notes_js, durations_js)
+def setVolume(volume):
+    """Set volume (0.0 to 1.0)"""
+    js.SprechstimmeAPI.setVolume(volume)
 
-    def setWave(self, wave_type):
-        """Set the waveform type: sine, square, sawtooth, triangle"""
-        self._api.setWave(wave_type)
+def sequence(pattern, tempo=120):
+    """Play a sequence with tempo"""
+    # Convert Python dicts to JS objects
+    pattern_js = to_js([
+        {'note': to_js(item['note']) if isinstance(item['note'], list) else item['note'],
+         'duration': item['duration']}
+        for item in pattern
+    ])
+    js.SprechstimmeAPI.sequence(pattern_js, tempo)
 
-    def setVolume(self, volume):
-        """Set volume (0.0 to 1.0)"""
-        self._api.setVolume(volume)
+# Create a proper module
+sprechstimme = types.ModuleType('sprechstimme')
+sprechstimme.__doc__ = 'Sprechstimme - Browser-based audio synthesis'
+sprechstimme.play = play
+sprechstimme.playChord = playChord
+sprechstimme.playMelody = playMelody
+sprechstimme.setWave = setWave
+sprechstimme.setVolume = setVolume
+sprechstimme.sequence = sequence
 
-    def sequence(self, pattern, tempo=120):
-        """Play a sequence with tempo"""
-        # Convert Python dicts to JS objects
-        pattern_js = to_js([
-            {'note': to_js(item['note']) if isinstance(item['note'], list) else item['note'],
-             'duration': item['duration']}
-            for item in pattern
-        ])
-        self._api.sequence(pattern_js, tempo)
-
-# Create module instance and register it
-_sprechstimme_instance = SprechstimmeModule()
-
-# Make it importable as a module
-sys.modules['sprechstimme'] = _sprechstimme_instance
-
-# Also create sp alias globally
-sp = _sprechstimme_instance
+# Register it
+sys.modules['sprechstimme'] = sprechstimme
 `);
 
         isPyodideReady = true;
