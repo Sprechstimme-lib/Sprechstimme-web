@@ -1,4 +1,4 @@
-// Sprechstimme Playground - Web Audio Implementation
+// Sprechstimme Playground - Pyodide Implementation
 
 // Audio Context
 let audioContext = null;
@@ -7,6 +7,10 @@ let analyser = null;
 let currentWaveType = 'sine';
 let currentVolume = 0.5;
 let activeOscillators = [];
+
+// Pyodide
+let pyodide = null;
+let isPyodideReady = false;
 
 // Note to frequency mapping
 const noteFrequencies = {
@@ -29,96 +33,14 @@ function initAudio() {
         masterGain.connect(analyser);
         analyser.connect(audioContext.destination);
 
-        log('Audio system initialized', 'success');
         startVisualizer();
     }
 }
 
-// Sprechstimme API Implementation
-const sp = {
-    play: function(note, duration = 1.0) {
-        initAudio();
-        const freq = noteFrequencies[note.toUpperCase()];
-        if (!freq) {
-            log(`Error: Unknown note "${note}"`, 'error');
-            return;
-        }
-
-        playTone(freq, duration, note);
-        log(`♪ Playing ${note} (${freq.toFixed(2)} Hz) for ${duration}s`, 'success');
-    },
-
-    playChord: function(notes, duration = 1.0) {
-        initAudio();
-        log(`♪ Playing chord: [${notes.join(', ')}] for ${duration}s`, 'success');
-
-        notes.forEach(note => {
-            const freq = noteFrequencies[note.toUpperCase()];
-            if (freq) {
-                playTone(freq, duration, note, 0.3); // Lower volume for chords
-            }
-        });
-    },
-
-    playMelody: function(notes, durations) {
-        initAudio();
-        if (notes.length !== durations.length) {
-            log('Error: notes and durations must have same length', 'error');
-            return;
-        }
-
-        log(`♪ Playing melody: ${notes.length} notes`, 'success');
-
-        let time = 0;
-        notes.forEach((note, i) => {
-            const freq = noteFrequencies[note.toUpperCase()];
-            const dur = durations[i];
-            if (freq) {
-                setTimeout(() => {
-                    playTone(freq, dur, note);
-                }, time * 1000);
-            }
-            time += dur;
-        });
-    },
-
-    setWave: function(waveType) {
-        currentWaveType = waveType;
-        document.getElementById('wave-select').value = waveType;
-        log(`Waveform changed to: ${waveType}`, 'info');
-    },
-
-    setVolume: function(volume) {
-        currentVolume = Math.max(0, Math.min(1, volume));
-        if (masterGain) {
-            masterGain.gain.value = currentVolume;
-        }
-        const slider = document.getElementById('volume-control');
-        slider.value = currentVolume * 100;
-        document.getElementById('volume-value').textContent = Math.round(currentVolume * 100) + '%';
-        log(`Volume set to: ${Math.round(currentVolume * 100)}%`, 'info');
-    },
-
-    // Additional utility functions
-    sequence: function(pattern, tempo = 120) {
-        const beatDuration = 60 / tempo;
-        let time = 0;
-
-        log(`♪ Playing sequence at ${tempo} BPM`, 'success');
-
-        pattern.forEach(item => {
-            if (Array.isArray(item.note)) {
-                setTimeout(() => sp.playChord(item.note, item.duration), time * 1000);
-            } else {
-                setTimeout(() => sp.play(item.note, item.duration), time * 1000);
-            }
-            time += item.duration;
-        });
-    }
-};
-
 // Play a single tone
 function playTone(frequency, duration, noteName, volumeMult = 1.0) {
+    initAudio();
+
     const oscillator = audioContext.createOscillator();
     const gainNode = audioContext.createGain();
 
@@ -177,10 +99,215 @@ function stopAllAudio() {
     log('All audio stopped', 'info');
 }
 
+// Sprechstimme API for Python (exposed to Pyodide)
+const SprechstimmeAPI = {
+    play: function(note, duration = 1.0) {
+        const freq = noteFrequencies[note.toUpperCase()];
+        if (!freq) {
+            log(`Error: Unknown note "${note}"`, 'error');
+            return;
+        }
+        playTone(freq, duration, note);
+        log(`♪ Playing ${note} (${freq.toFixed(2)} Hz) for ${duration}s`, 'success');
+    },
+
+    playChord: function(notes, duration = 1.0) {
+        log(`♪ Playing chord: [${notes.join(', ')}] for ${duration}s`, 'success');
+        notes.forEach(note => {
+            const freq = noteFrequencies[note.toUpperCase()];
+            if (freq) {
+                playTone(freq, duration, note, 0.3);
+            }
+        });
+    },
+
+    playMelody: function(notes, durations) {
+        if (notes.length !== durations.length) {
+            log('Error: notes and durations must have same length', 'error');
+            return;
+        }
+        log(`♪ Playing melody: ${notes.length} notes`, 'success');
+        let time = 0;
+        notes.forEach((note, i) => {
+            const freq = noteFrequencies[note.toUpperCase()];
+            const dur = durations[i];
+            if (freq) {
+                setTimeout(() => {
+                    playTone(freq, dur, note);
+                }, time * 1000);
+            }
+            time += dur;
+        });
+    },
+
+    setWave: function(waveType) {
+        currentWaveType = waveType;
+        document.getElementById('wave-select').value = waveType;
+        log(`Waveform changed to: ${waveType}`, 'info');
+    },
+
+    setVolume: function(volume) {
+        currentVolume = Math.max(0, Math.min(1, volume));
+        if (masterGain) {
+            masterGain.gain.value = currentVolume;
+        }
+        const slider = document.getElementById('volume-control');
+        slider.value = currentVolume * 100;
+        document.getElementById('volume-value').textContent = Math.round(currentVolume * 100) + '%';
+        log(`Volume set to: ${Math.round(currentVolume * 100)}%`, 'info');
+    },
+
+    sequence: function(pattern, tempo = 120) {
+        const beatDuration = 60 / tempo;
+        let time = 0;
+        log(`♪ Playing sequence at ${tempo} BPM`, 'success');
+
+        pattern.forEach(item => {
+            const note = item.note || item.get('note');
+            const duration = item.duration || item.get('duration');
+
+            if (Array.isArray(note)) {
+                setTimeout(() => this.playChord(note, duration), time * 1000);
+            } else {
+                setTimeout(() => this.play(note, duration), time * 1000);
+            }
+            time += duration;
+        });
+    }
+};
+
+// Initialize Pyodide
+async function initPyodide() {
+    try {
+        log('Loading Python environment...', 'info');
+        setAudioStatus('loading');
+
+        pyodide = await loadPyodide({
+            indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.24.1/full/'
+        });
+
+        // Create the sprechstimme module in Python
+        await pyodide.runPythonAsync(`
+import js
+from pyodide.ffi import to_js
+import time as _time
+
+class _Sprechstimme:
+    """Sprechstimme module for browser-based audio synthesis"""
+
+    def __init__(self):
+        self._api = js.SprechstimmeAPI
+
+    def play(self, note, duration=1.0):
+        """Play a single note"""
+        self._api.play(note, duration)
+
+    def playChord(self, notes, duration=1.0):
+        """Play multiple notes simultaneously"""
+        notes_js = to_js(notes)
+        self._api.playChord(notes_js, duration)
+
+    def playMelody(self, notes, durations):
+        """Play a sequence of notes"""
+        notes_js = to_js(notes)
+        durations_js = to_js(durations)
+        self._api.playMelody(notes_js, durations_js)
+
+    def setWave(self, wave_type):
+        """Set the waveform type: sine, square, sawtooth, triangle"""
+        self._api.setWave(wave_type)
+
+    def setVolume(self, volume):
+        """Set volume (0.0 to 1.0)"""
+        self._api.setVolume(volume)
+
+    def sequence(self, pattern, tempo=120):
+        """Play a sequence with tempo"""
+        # Convert Python dicts to JS objects
+        pattern_js = to_js([
+            {'note': to_js(item['note']) if isinstance(item['note'], list) else item['note'],
+             'duration': item['duration']}
+            for item in pattern
+        ])
+        self._api.sequence(pattern_js, tempo)
+
+# Create global instance
+sp = _Sprechstimme()
+sprechstimme = sp
+
+# Create an alias for import
+import sys
+sys.modules['sprechstimme'] = type('Module', (), {'sp': sp})()
+`);
+
+        isPyodideReady = true;
+        log('✓ Python environment ready!', 'success');
+        log('You can now run Python code with real syntax', 'info');
+        setAudioStatus('ready');
+
+    } catch (error) {
+        log(`Failed to load Python: ${error.message}`, 'error');
+        setAudioStatus('error');
+    }
+}
+
+// Code execution
+async function executeCode() {
+    if (!isPyodideReady) {
+        log('Python environment is still loading...', 'error');
+        return;
+    }
+
+    const code = document.getElementById('code-editor').value;
+    clearOutput();
+
+    try {
+        log('Executing Python code...', 'info');
+
+        // Redirect Python stdout to our output
+        await pyodide.runPythonAsync(`
+import sys
+from io import StringIO
+
+_stdout_backup = sys.stdout
+sys.stdout = StringIO()
+`);
+
+        // Run the user's code
+        try {
+            await pyodide.runPythonAsync(code);
+        } catch (error) {
+            log(`Python Error: ${error.message}`, 'error');
+        }
+
+        // Get any print output
+        const output = await pyodide.runPythonAsync(`
+output = sys.stdout.getvalue()
+sys.stdout = _stdout_backup
+output
+`);
+
+        if (output) {
+            output.split('\n').forEach(line => {
+                if (line.trim()) {
+                    log(line, 'success');
+                }
+            });
+        }
+
+        if (activeOscillators.length === 0 && !output) {
+            log('Code executed (no output or audio)', 'info');
+        }
+
+    } catch (error) {
+        log(`Error: ${error.message}`, 'error');
+    }
+}
+
 // Code Examples
 const examples = {
     basic: `# Welcome to Sprechstimme Playground!
-# This runs in your browser with real audio playback
+# Real Python interpreter powered by Pyodide
 
 import sprechstimme as sp
 
@@ -241,91 +368,6 @@ pattern = [
 sp.sequence(pattern, tempo=120)`
 };
 
-// Code execution
-function executeCode() {
-    const code = document.getElementById('code-editor').value;
-    clearOutput();
-
-    try {
-        // Parse and convert Python-like code to JavaScript
-        const lines = code.split('\n');
-        const context = {}; // Store variables
-
-        log('Executing code...', 'info');
-
-        // Process each line
-        lines.forEach((line, index) => {
-            const trimmed = line.trim();
-
-            // Skip comments, empty lines, and imports
-            if (!trimmed || trimmed.startsWith('#') || trimmed.startsWith('import')) {
-                return;
-            }
-
-            try {
-                // Handle variable assignment (e.g., notes = [...])
-                if (trimmed.includes('=') && !trimmed.startsWith('sp.')) {
-                    const parts = trimmed.split('=');
-                    const varName = parts[0].trim();
-                    const varValue = parts.slice(1).join('=').trim();
-
-                    // Convert Python syntax to JavaScript
-                    const jsValue = pythonToJs(varValue);
-
-                    // Evaluate the JavaScript expression to get the actual value
-                    const evaluatedValue = eval(jsValue);
-
-                    // Store in context and make it available
-                    context[varName] = evaluatedValue;
-                    // Also make it globally available for eval
-                    window[varName] = evaluatedValue;
-                }
-                // Handle sp.* commands
-                else if (trimmed.startsWith('sp.')) {
-                    // Convert Python-style parameters to JavaScript
-                    const jsLine = pythonToJs(trimmed);
-                    eval(jsLine);
-                }
-            } catch (e) {
-                log(`Error on line ${index + 1}: ${e.message}`, 'error');
-            }
-        });
-
-        // Clean up global variables
-        setTimeout(() => {
-            Object.keys(context).forEach(key => {
-                delete window[key];
-            });
-        }, 100);
-
-        if (activeOscillators.length === 0) {
-            log('Code executed (no audio produced)', 'info');
-        }
-
-    } catch (error) {
-        log(`Error: ${error.message}`, 'error');
-    }
-}
-
-// Convert Python syntax to JavaScript
-function pythonToJs(pythonCode) {
-    let js = pythonCode;
-
-    // Convert Python True/False/None to JavaScript
-    js = js.replace(/\bTrue\b/g, 'true');
-    js = js.replace(/\bFalse\b/g, 'false');
-    js = js.replace(/\bNone\b/g, 'null');
-
-    // Convert Python dictionary keys from quoted to unquoted
-    // Handles: {'key': value} -> {key: value} or {"key": value} -> {key: value}
-    js = js.replace(/\{['"](\w+)['"]\s*:/g, '{$1:');
-    js = js.replace(/,\s*['"](\w+)['"]\s*:/g, ', $1:');
-
-    // Handle Python keyword arguments (duration=1.0) - already compatible with JS
-
-    return js;
-}
-
 // UI Helper Functions
 function log(message, type = 'info') {
     const output = document.getElementById('output-display');
@@ -351,6 +393,12 @@ function setAudioStatus(status) {
     if (status === 'playing') {
         statusEl.textContent = 'Playing';
         dot.classList.add('playing');
+    } else if (status === 'loading') {
+        statusEl.textContent = 'Loading...';
+        dot.classList.remove('playing');
+    } else if (status === 'error') {
+        statusEl.textContent = 'Error';
+        dot.classList.remove('playing');
     } else {
         statusEl.textContent = 'Ready';
         dot.classList.remove('playing');
@@ -427,6 +475,9 @@ function startVisualizer() {
 
 // Event Listeners
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize Pyodide on load
+    initPyodide();
+
     // Run button
     document.getElementById('run-btn').addEventListener('click', () => {
         executeCode();
@@ -489,5 +540,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Welcome message
     log('🎵 Welcome to Sprechstimme Playground!', 'success');
-    log('Click "Run Code" or press Ctrl+Enter to execute', 'info');
+    log('Initializing Python environment...', 'info');
 });
