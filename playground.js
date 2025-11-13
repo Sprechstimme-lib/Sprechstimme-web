@@ -190,9 +190,9 @@ async function initPyodide() {
         await pyodide.runPythonAsync(`
 import js
 from pyodide.ffi import to_js
-import time as _time
+import sys
 
-class _Sprechstimme:
+class SprechstimmeModule:
     """Sprechstimme module for browser-based audio synthesis"""
 
     def __init__(self):
@@ -231,13 +231,14 @@ class _Sprechstimme:
         ])
         self._api.sequence(pattern_js, tempo)
 
-# Create global instance
-sp = _Sprechstimme()
-sprechstimme = sp
+# Create module instance and register it
+_sprechstimme_instance = SprechstimmeModule()
 
-# Create an alias for import
-import sys
-sys.modules['sprechstimme'] = type('Module', (), {'sp': sp})()
+# Make it importable as a module
+sys.modules['sprechstimme'] = _sprechstimme_instance
+
+# Also create sp alias globally
+sp = _sprechstimme_instance
 `);
 
         isPyodideReady = true;
