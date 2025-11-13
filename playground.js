@@ -100,7 +100,7 @@ function stopAllAudio() {
 }
 
 // Sprechstimme API for Python (exposed to Pyodide)
-const SprechstimmeAPI = {
+window.SprechstimmeAPI = {
     play: function(note, duration = 1.0) {
         const freq = noteFrequencies[note.toUpperCase()];
         if (!freq) {
@@ -167,9 +167,9 @@ const SprechstimmeAPI = {
             const duration = item.duration || item.get('duration');
 
             if (Array.isArray(note)) {
-                setTimeout(() => this.playChord(note, duration), time * 1000);
+                setTimeout(() => window.SprechstimmeAPI.playChord(note, duration), time * 1000);
             } else {
-                setTimeout(() => this.play(note, duration), time * 1000);
+                setTimeout(() => window.SprechstimmeAPI.play(note, duration), time * 1000);
             }
             time += duration;
         });
