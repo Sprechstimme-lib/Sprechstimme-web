@@ -40,6 +40,8 @@
                 <a href="#about" class="nav-item">About</a>
                 <a href="#capabilities" class="nav-item">Capabilities</a>
                 <a href="#examples" class="nav-item">Examples</a>
+                <a href="#playground" class="nav-item">Playground</a>
+                <a href="#demos" class="nav-item">Demos</a>
                 <a href="#documentation" class="nav-item">Docs</a>
                 <a href="https://github.com/Sprechstimme-lib/Sprechstimme" class="nav-item nav-github" target="_blank">GitHub</a>
             </div>
@@ -330,6 +332,265 @@ peaks = sp.analysis.find_peaks(mags, threshold=<span class="n">0.5</span>)
 <span class="c"># Detect tempo</span>
 bpm = sp.analysis.detect_tempo(audio)
 <span class="k">print</span>(<span class="s">f'Tempo: {bpm:.1f} BPM'</span>)</code></pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Playground Section -->
+    <section id="playground" class="playground-section">
+        <div class="section-container">
+            <h2 class="section-heading centered">Try It Online</h2>
+            <p class="section-subtitle">Experiment with Sprechstimme directly in your browser</p>
+
+            <div class="playground-grid">
+                <div class="playground-card">
+                    <div class="playground-header">
+                        <div class="playground-icon">
+                            <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                                <rect x="8" y="8" width="32" height="32" rx="4" stroke="currentColor" stroke-width="2"/>
+                                <path d="M16 20L24 24L16 28V20Z" fill="currentColor"/>
+                                <circle cx="32" cy="24" r="2" fill="currentColor"/>
+                            </svg>
+                        </div>
+                        <h3>Google Colab Notebook</h3>
+                    </div>
+                    <p class="playground-description">Full-featured Python environment with GPU acceleration. Perfect for experimenting with synthesis and creating your first compositions.</p>
+                    <div class="playground-features">
+                        <span class="feature-tag">Free</span>
+                        <span class="feature-tag">No Setup</span>
+                        <span class="feature-tag">GPU Support</span>
+                    </div>
+                    <a href="https://colab.research.google.com/github/Sprechstimme-lib/Sprechstimme/blob/main/examples/playground.ipynb" class="playground-btn" target="_blank" rel="noopener">
+                        <span>Open in Colab</span>
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <path d="M12 4L14 6M14 6L12 8M14 6H6M8 12H4C2.89543 12 2 11.1046 2 10V6C2 4.89543 2.89543 4 4 4H6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </a>
+                </div>
+
+                <div class="playground-card">
+                    <div class="playground-header">
+                        <div class="playground-icon">
+                            <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                                <rect x="8" y="8" width="32" height="32" rx="4" stroke="currentColor" stroke-width="2"/>
+                                <path d="M18 18L24 24L18 30" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M26 30H32" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                        <h3>Replit Workspace</h3>
+                    </div>
+                    <p class="playground-description">Interactive IDE with real-time collaboration. Start coding immediately with pre-installed Sprechstimme and example projects.</p>
+                    <div class="playground-features">
+                        <span class="feature-tag">Real-time</span>
+                        <span class="feature-tag">Collaborative</span>
+                        <span class="feature-tag">Instant</span>
+                    </div>
+                    <a href="https://replit.com/@sprechstimme/playground" class="playground-btn" target="_blank" rel="noopener">
+                        <span>Open in Replit</span>
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <path d="M12 4L14 6M14 6L12 8M14 6H6M8 12H4C2.89543 12 2 11.1046 2 10V6C2 4.89543 2.89543 4 4 4H6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+
+            <div class="quick-start-box">
+                <h4>Quick Start Code</h4>
+                <p>Copy this into any Python environment to get started:</p>
+                <pre class="quick-code"><code><span class="c"># Install and import</span>
+<span class="k">import</span> os
+os.system(<span class="s">'pip install sprechstimme'</span>)
+
+<span class="k">import</span> sprechstimme <span class="k">as</span> sp
+
+<span class="c"># Create your first sound</span>
+sp.new(<span class="s">'synth'</span>)
+sp.play(<span class="s">'synth'</span>, [<span class="s">'C4'</span>, <span class="s">'E4'</span>, <span class="s">'G4'</span>], duration=<span class="n">2.0</span>)</code></pre>
+                <button class="copy-quick-start" data-copy="# Install and import&#10;import os&#10;os.system('pip install sprechstimme')&#10;&#10;import sprechstimme as sp&#10;&#10;# Create your first sound&#10;sp.new('synth')&#10;sp.play('synth', ['C4', 'E4', 'G4'], duration=2.0)">Copy Code</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Demos Section -->
+    <section id="demos" class="demos-section">
+        <div class="section-container">
+            <h2 class="section-heading centered">Interactive Demos</h2>
+            <p class="section-subtitle">Explore the power of Sprechstimme with live examples</p>
+
+            <!-- Waveform Visualizer -->
+            <div class="demo-feature">
+                <h3 class="demo-title">Waveform Visualizer</h3>
+                <p class="demo-description">See different synthesis methods in action. Select a waveform to visualize its shape:</p>
+
+                <div class="waveform-controls">
+                    <button class="wave-btn active" data-wave="sine">Sine</button>
+                    <button class="wave-btn" data-wave="square">Square</button>
+                    <button class="wave-btn" data-wave="sawtooth">Sawtooth</button>
+                    <button class="wave-btn" data-wave="triangle">Triangle</button>
+                    <button class="wave-btn" data-wave="fm">FM Synthesis</button>
+                    <button class="wave-btn" data-wave="noise">Pink Noise</button>
+                </div>
+
+                <div class="waveform-display-large">
+                    <canvas id="demo-wave"></canvas>
+                </div>
+
+                <div class="waveform-info">
+                    <div class="info-item">
+                        <span class="info-label">Waveform:</span>
+                        <span class="info-value" id="current-wave">Sine</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Frequency:</span>
+                        <span class="info-value">440 Hz (A4)</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Use Case:</span>
+                        <span class="info-value" id="wave-usecase">Pure tones, smooth pads, sub bass</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Demo Examples Grid -->
+            <div class="demos-grid">
+                <div class="demo-card">
+                    <div class="demo-card-header">
+                        <h4>Chord Progression</h4>
+                        <span class="demo-badge">Composition</span>
+                    </div>
+                    <p>Create harmonic progressions with automatic voice leading.</p>
+                    <pre class="demo-code"><code>sp.presets.load(<span class="s">'piano'</span>)
+song = sp.Song(bpm=<span class="n">90</span>)
+<span class="k">for</span> chord <span class="k">in</span> [<span class="s">'Cmaj7'</span>, <span class="s">'Am7'</span>, <span class="s">'Fmaj7'</span>, <span class="s">'G7'</span>]:
+    song.add_chord(<span class="s">'piano'</span>, chord, duration=<span class="n">4</span>)</code></pre>
+                    <div class="demo-output">
+                        <span class="output-label">Output:</span>
+                        <span class="output-value">Jazz chord progression in C major</span>
+                    </div>
+                </div>
+
+                <div class="demo-card">
+                    <div class="demo-card-header">
+                        <h4>FM Bell Sound</h4>
+                        <span class="demo-badge">Synthesis</span>
+                    </div>
+                    <p>Frequency modulation creates metallic, bell-like timbres.</p>
+                    <pre class="demo-code"><code>sp.new(<span class="s">'bell'</span>)
+sp.create(<span class="s">'bell'</span>,
+    wavetype=sp.waves.fm,
+    mod_ratio=<span class="n">3.5</span>,
+    mod_index=<span class="n">12</span>,
+    envelope={<span class="s">'decay'</span>: <span class="n">2.0</span>}
+)</code></pre>
+                    <div class="demo-output">
+                        <span class="output-label">Output:</span>
+                        <span class="output-value">Bright, metallic bell tone</span>
+                    </div>
+                </div>
+
+                <div class="demo-card">
+                    <div class="demo-card-header">
+                        <h4>Moog Filter Sweep</h4>
+                        <span class="demo-badge">Effects</span>
+                    </div>
+                    <p>Classic analog-style filter with resonance control.</p>
+                    <pre class="demo-code"><code>sp.new(<span class="s">'bass'</span>)
+sp.apply_filter(<span class="s">'bass'</span>,
+    sp.filters.moog_ladder,
+    cutoff=<span class="n">500</span>,
+    resonance=<span class="n">0.9</span>
+)</code></pre>
+                    <div class="demo-output">
+                        <span class="output-label">Output:</span>
+                        <span class="output-value">Warm, squelchy filtered sound</span>
+                    </div>
+                </div>
+
+                <div class="demo-card">
+                    <div class="demo-card-header">
+                        <h4>Karplus-Strong Pluck</h4>
+                        <span class="demo-badge">Physical Modeling</span>
+                    </div>
+                    <p>Physical modeling algorithm for plucked string instruments.</p>
+                    <pre class="demo-code"><code>sp.new(<span class="s">'guitar'</span>)
+sp.create(<span class="s">'guitar'</span>,
+    wavetype=sp.waves.karplus_strong,
+    damping=<span class="n">0.998</span>
+)
+sp.play(<span class="s">'guitar'</span>, <span class="s">'E2'</span>, duration=<span class="n">3.0</span>)</code></pre>
+                    <div class="demo-output">
+                        <span class="output-label">Output:</span>
+                        <span class="output-value">Realistic guitar/bass pluck</span>
+                    </div>
+                </div>
+
+                <div class="demo-card">
+                    <div class="demo-card-header">
+                        <h4>Reverb & Delay</h4>
+                        <span class="demo-badge">Spatial FX</span>
+                    </div>
+                    <p>Add depth and space to any sound with reverb and delay.</p>
+                    <pre class="demo-code"><code>sp.apply_filter(<span class="s">'synth'</span>,
+    sp.filters.reverb,
+    room_size=<span class="n">0.9</span>,
+    damping=<span class="n">0.5</span>
+)
+sp.apply_filter(<span class="s">'synth'</span>, sp.filters.delay)</code></pre>
+                    <div class="demo-output">
+                        <span class="output-label">Output:</span>
+                        <span class="output-value">Spacious, ambient atmosphere</span>
+                    </div>
+                </div>
+
+                <div class="demo-card">
+                    <div class="demo-card-header">
+                        <h4>Spectrum Analysis</h4>
+                        <span class="demo-badge">Analysis</span>
+                    </div>
+                    <p>Analyze frequency content and detect musical features.</p>
+                    <pre class="demo-code"><code>audio = sp.generate(<span class="s">'synth'</span>, <span class="s">'A4'</span>)
+spectrum = sp.analysis.fft(audio)
+pitch = sp.analysis.detect_pitch(audio)
+<span class="k">print</span>(<span class="s">f"Detected: {pitch} Hz"</span>)</code></pre>
+                    <div class="demo-output">
+                        <span class="output-label">Output:</span>
+                        <span class="output-value">Detected: 440.0 Hz (A4)</span>
+                    </div>
+                </div>
+
+                <div class="demo-card">
+                    <div class="demo-card-header">
+                        <h4>Wavetable Morphing</h4>
+                        <span class="demo-badge">Advanced</span>
+                    </div>
+                    <p>Smoothly morph between different waveforms over time.</p>
+                    <pre class="demo-code"><code>sp.new(<span class="s">'morph'</span>)
+sp.create(<span class="s">'morph'</span>,
+    wavetype=sp.waves.wavetable,
+    tables=[sp.waves.sine, sp.waves.square],
+    morph_position=<span class="n">0.5</span>
+)</code></pre>
+                    <div class="demo-output">
+                        <span class="output-label">Output:</span>
+                        <span class="output-value">Evolving, dynamic timbre</span>
+                    </div>
+                </div>
+
+                <div class="demo-card">
+                    <div class="demo-card-header">
+                        <h4>Multi-track Export</h4>
+                        <span class="demo-badge">Production</span>
+                    </div>
+                    <p>Export complete songs with multiple instruments to WAV.</p>
+                    <pre class="demo-code"><code>song = sp.Song(bpm=<span class="n">128</span>)
+song.add_track(<span class="s">'drums'</span>, <span class="s">'kick'</span>, ...)
+song.add_track(<span class="s">'bass'</span>, <span class="s">'bass'</span>, ...)
+song.export(<span class="s">'output.wav'</span>, quality=<span class="s">'high'</span>)</code></pre>
+                    <div class="demo-output">
+                        <span class="output-label">Output:</span>
+                        <span class="output-value">Professional 24-bit WAV file</span>
+                    </div>
                 </div>
             </div>
         </div>
