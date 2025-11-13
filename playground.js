@@ -247,25 +247,53 @@ function executeCode() {
     clearOutput();
 
     try {
-        // Extract and execute Python-like commands
-        const lines = code.split('\n').filter(line => {
-            const trimmed = line.trim();
-            return trimmed && !trimmed.startsWith('#') && !trimmed.startsWith('import');
-        });
+        // Parse and convert Python-like code to JavaScript
+        const lines = code.split('\n');
+        const context = {}; // Store variables
 
         log('Executing code...', 'info');
 
-        lines.forEach(line => {
+        // Process each line
+        lines.forEach((line, index) => {
             const trimmed = line.trim();
-            if (trimmed.startsWith('sp.')) {
-                try {
-                    // Safely evaluate sp commands
-                    eval(trimmed);
-                } catch (e) {
-                    log(`Error: ${e.message}`, 'error');
+
+            // Skip comments, empty lines, and imports
+            if (!trimmed || trimmed.startsWith('#') || trimmed.startsWith('import')) {
+                return;
+            }
+
+            try {
+                // Handle variable assignment (e.g., notes = [...])
+                if (trimmed.includes('=') && !trimmed.startsWith('sp.')) {
+                    const parts = trimmed.split('=');
+                    const varName = parts[0].trim();
+                    const varValue = parts.slice(1).join('=').trim();
+
+                    // Convert Python syntax to JavaScript
+                    const jsValue = pythonToJs(varValue);
+
+                    // Store in context and make it available
+                    context[varName] = jsValue;
+                    // Also make it globally available for eval
+                    window[varName] = jsValue;
                 }
+                // Handle sp.* commands
+                else if (trimmed.startsWith('sp.')) {
+                    // Convert Python-style parameters to JavaScript
+                    const jsLine = pythonToJs(trimmed);
+                    eval(jsLine);
+                }
+            } catch (e) {
+                log(`Error on line ${index + 1}: ${e.message}`, 'error');
             }
         });
+
+        // Clean up global variables
+        setTimeout(() => {
+            Object.keys(context).forEach(key => {
+                delete window[key];
+            });
+        }, 100);
 
         if (activeOscillators.length === 0) {
             log('Code executed (no audio produced)', 'info');
@@ -274,6 +302,26 @@ function executeCode() {
     } catch (error) {
         log(`Error: ${error.message}`, 'error');
     }
+}
+
+// Convert Python syntax to JavaScript
+function pythonToJs(pythonCode) {
+    let js = pythonCode;
+
+    // Convert Python lists to JavaScript arrays (already compatible)
+    // Convert Python dicts to JavaScript objects
+    js = js.replace(/\{(['"])\s*(\w+)\1\s*:/g, '{$2:'); // {'key': -> {key:
+    js = js.replace(/:\s*(['"])([^'"]+)\1/g, ': "$2"'); // Ensure string values are quoted
+
+    // Convert Python True/False to JavaScript
+    js = js.replace(/\bTrue\b/g, 'true');
+    js = js.replace(/\bFalse\b/g, 'false');
+    js = js.replace(/\bNone\b/g, 'null');
+
+    // Handle Python keyword arguments (e.g., duration=1.0)
+    // These are already compatible with JavaScript
+
+    return js;
 }
 
 // UI Helper Functions
