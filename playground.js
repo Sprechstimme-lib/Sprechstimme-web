@@ -167,18 +167,60 @@ sounddevice_path = pathlib.Path('/lib/python3.11/site-packages/sounddevice.py')
 if sounddevice_path.exists():
     # Read the file
     content = sounddevice_path.read_text()
+    original_content = content
 
-    # Replace the line that raises the PortAudio error with pass
-    # This is around line 71: "raise OSError('PortAudio library not found')"
+    # Patch all PortAudio library calls that will fail in Pyodide
+    # The main issue is in _initialize() where it calls _lib.Pa_Initialize()
+
+    # Patch 1: The main culprit - Pa_Initialize call
+    content = content.replace(
+        "_check(_lib.Pa_Initialize(), 'Error initializing PortAudio')",
+        "pass  # Patched for Pyodide - PortAudio not available in browser"
+    )
+
+    # Patch 2: Pa_Terminate call
+    content = content.replace(
+        "_check(_lib.Pa_Terminate(), 'Error terminating PortAudio')",
+        "pass  # Patched for Pyodide - PortAudio not available in browser"
+    )
+
+    # Patch 3: Replace OSError raise
     content = content.replace(
         "raise OSError('PortAudio library not found')",
         "pass  # Patched for Pyodide - PortAudio not available in browser"
     )
 
-    # Write it back
-    sounddevice_path.write_text(content)
+    # Patch 4: Handle all possible _lib calls that might fail
+    # Replace any _lib.Pa_* calls with safe alternatives
+    import re
 
-    print("Patched sounddevice to work in browser environment")
+    # Find all _check(_lib.Pa_* calls and replace them with pass
+    # This catches Pa_Initialize, Pa_Terminate, and any other PortAudio calls
+    content = re.sub(
+        r'_check\\(_lib\\.Pa_\\w+\\([^)]*\\)[^)]*\\)',
+        'pass  # Patched for Pyodide',
+        content
+    )
+
+    # Patch 5: Wrap the module-level _initialize() call in try-except
+    # Look for _initialize() at the end of the file (module level)
+    lines = content.split('\\n')
+    patched_lines = []
+    for i, line in enumerate(lines):
+        if line.strip() == '_initialize()' and not line.startswith(' '):
+            # This is a module-level _initialize() call
+            patched_lines.append('try:')
+            patched_lines.append('    _initialize()')
+            patched_lines.append('except Exception as e:')
+            patched_lines.append('    pass  # Pyodide: PortAudio not available in browser')
+        else:
+            patched_lines.append(line)
+    content = '\\n'.join(patched_lines)
+
+    # Write the patched content back
+    sounddevice_path.write_text(content)
+    print("✓ Patched sounddevice.py for browser environment")
+    print(f"  Applied patches to prevent PortAudio initialization errors")
 `);
 
         log('Setting up audio playback...', 'info');
