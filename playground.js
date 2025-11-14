@@ -199,30 +199,52 @@ def _play_wav(wav_data):
     # Call JavaScript to play it
     js.playWavFromBase64(wav_base64)
 
-# Import sprechstimme after patching sounddevice
+# Import sprechstimme after stubbing sounddevice
 import sprechstimme
 
 # Store original play function
 original_play = sprechstimme.play
 
+# Keep track of captured WAV files
+_captured_wavs = {}
+
+# Monkey-patch open() to intercept WAV file writes
+_original_open = open
+
+def _patched_open(file, mode='r', *args, **kwargs):
+    """Intercept file writes to capture WAV data"""
+    # If opening a file for writing binary data (likely a WAV file)
+    if isinstance(file, str) and 'b' in mode and ('w' in mode or 'a' in mode):
+        # Create a BytesIO buffer instead
+        buffer = io.BytesIO()
+        buffer.name = file  # Store filename for reference
+        buffer.mode = mode
+        # Store buffer so we can retrieve it later
+        _captured_wavs[file] = buffer
+        return buffer
+    else:
+        # For other operations, use original open
+        return _original_open(file, mode, *args, **kwargs)
+
+# Apply the monkey-patch
+import builtins
+builtins.open = _patched_open
+
 def custom_play(*args, **kwargs):
     """Wrapper that captures WAV output and plays it"""
-    # Create a BytesIO buffer to capture output
-    buffer = io.BytesIO()
+    # Clear previous captures
+    _captured_wavs.clear()
 
-    # If no output file is specified, set buffer as output
-    if 'output' not in kwargs:
-        kwargs['output'] = buffer
-
-    # Call original function
+    # Call original function - it will write to our intercepted BytesIO
     result = original_play(*args, **kwargs)
 
-    # If we captured to buffer, play it
-    if kwargs.get('output') == buffer:
+    # Check if we captured any WAV data
+    for filename, buffer in _captured_wavs.items():
         buffer.seek(0)
         wav_data = buffer.read()
         if len(wav_data) > 0:
             _play_wav(wav_data)
+            break  # Play the first WAV we find
 
     return result
 
