@@ -202,9 +202,6 @@ def _play_wav(wav_data):
 # Import sprechstimme after stubbing sounddevice
 import sprechstimme
 
-# Store original play function
-original_play = sprechstimme.play
-
 # Keep track of captured WAV files
 _captured_wavs = {}
 
@@ -230,13 +227,17 @@ def _patched_open(file, mode='r', *args, **kwargs):
 import builtins
 builtins.open = _patched_open
 
+# CRITICAL: Store reference to original play function BEFORE we replace it
+_original_sprechstimme_play = sprechstimme.play
+
+# Create wrapper function
 def custom_play(*args, **kwargs):
     """Wrapper that captures WAV output and plays it"""
     # Clear previous captures
     _captured_wavs.clear()
 
-    # Call original function - it will write to our intercepted BytesIO
-    result = original_play(*args, **kwargs)
+    # Call the ORIGINAL function (not the patched one)
+    result = _original_sprechstimme_play(*args, **kwargs)
 
     # Check if we captured any WAV data
     for filename, buffer in _captured_wavs.items():
@@ -248,7 +249,7 @@ def custom_play(*args, **kwargs):
 
     return result
 
-# Patch sprechstimme.play
+# Now replace sprechstimme.play with our wrapper
 sprechstimme.play = custom_play
 `);
 
