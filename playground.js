@@ -155,72 +155,30 @@ async function initPyodide() {
 import micropip
 import sys
 
-# Install sprechstimme (this will also install sounddevice)
+# Strategy: Create a stub sounddevice module FIRST, before any installation
+# This prevents the real sounddevice from being imported and failing
+print("Creating sounddevice stub module...")
+
+# Create a minimal sounddevice module that provides the API sprechstimme expects
+# but doesn't try to initialize PortAudio
+import types
+
+sounddevice_stub = types.ModuleType('sounddevice')
+
+# Add minimal attributes that sprechstimme might need
+sounddevice_stub.play = lambda *args, **kwargs: None  # No-op play function
+sounddevice_stub.wait = lambda: None  # No-op wait function
+sounddevice_stub.stop = lambda: None  # No-op stop function
+sounddevice_stub.OutputStream = None  # Placeholder
+
+# Inject our stub into sys.modules BEFORE installing anything
+sys.modules['sounddevice'] = sounddevice_stub
+print("✓ Installed sounddevice stub module")
+
+# Now install sprechstimme - it will find our stub sounddevice in sys.modules
+print("Installing sprechstimme from PyPI...")
 await micropip.install('sprechstimme')
-
-# Now patch the installed sounddevice module to prevent PortAudio error
-import pathlib
-
-# Find the sounddevice.py file in site-packages
-sounddevice_path = pathlib.Path('/lib/python3.11/site-packages/sounddevice.py')
-
-if sounddevice_path.exists():
-    # Read the file
-    content = sounddevice_path.read_text()
-    original_content = content
-
-    # Patch all PortAudio library calls that will fail in Pyodide
-    # The main issue is in _initialize() where it calls _lib.Pa_Initialize()
-
-    # Patch 1: The main culprit - Pa_Initialize call
-    content = content.replace(
-        "_check(_lib.Pa_Initialize(), 'Error initializing PortAudio')",
-        "pass  # Patched for Pyodide - PortAudio not available in browser"
-    )
-
-    # Patch 2: Pa_Terminate call
-    content = content.replace(
-        "_check(_lib.Pa_Terminate(), 'Error terminating PortAudio')",
-        "pass  # Patched for Pyodide - PortAudio not available in browser"
-    )
-
-    # Patch 3: Replace OSError raise
-    content = content.replace(
-        "raise OSError('PortAudio library not found')",
-        "pass  # Patched for Pyodide - PortAudio not available in browser"
-    )
-
-    # Patch 4: Handle all possible _lib calls that might fail
-    # Replace any _lib.Pa_* calls with safe alternatives
-    import re
-
-    # Find all _check(_lib.Pa_* calls and replace them with pass
-    # This catches Pa_Initialize, Pa_Terminate, and any other PortAudio calls
-    content = re.sub(
-        r'_check\\(_lib\\.Pa_\\w+\\([^)]*\\)[^)]*\\)',
-        'pass  # Patched for Pyodide',
-        content
-    )
-
-    # Patch 5: Wrap the module-level _initialize() call in try-except
-    # Look for _initialize() at the end of the file (module level)
-    lines = content.split('\\n')
-    patched_lines = []
-    for i, line in enumerate(lines):
-        if line.strip() == '_initialize()' and not line.startswith(' '):
-            # This is a module-level _initialize() call
-            patched_lines.append('try:')
-            patched_lines.append('    _initialize()')
-            patched_lines.append('except Exception as e:')
-            patched_lines.append('    pass  # Pyodide: PortAudio not available in browser')
-        else:
-            patched_lines.append(line)
-    content = '\\n'.join(patched_lines)
-
-    # Write the patched content back
-    sounddevice_path.write_text(content)
-    print("✓ Patched sounddevice.py for browser environment")
-    print(f"  Applied patches to prevent PortAudio initialization errors")
+print("✓ Sprechstimme installed successfully")
 `);
 
         log('Setting up audio playback...', 'info');
