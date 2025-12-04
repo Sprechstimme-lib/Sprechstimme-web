@@ -256,7 +256,7 @@ sprechstimme.play = custom_play
         isPyodideReady = true;
         log('✓ Python environment ready!', 'success');
         log('✓ Sprechstimme library installed from PyPI', 'success');
-        log('You can now use the real sprechstimme library!', 'info');
+        log('Usage: sp.play("synth", note, duration=1.0)', 'info');
         setAudioStatus('ready');
 
     } catch (error) {
@@ -325,73 +325,73 @@ const examples = {
 # Real Python interpreter powered by Pyodide
 # Using the actual sprechstimme library from PyPI
 
-import sprechstimme
+import sprechstimme as sp
 
-# Play a single tone at 440 Hz (A4) for 1 second
-sprechstimme.play(440, duration=1.0)
+# Play a single tone at A4 (440 Hz) for 1 second
+# Syntax: sp.play(synth_name, notes, duration)
+sp.play("lead", "A4", duration=1.0)
 
-# Try other frequencies:
-# sprechstimme.play(523, duration=1.0)  # C5
-# sprechstimme.play(261, duration=1.0)  # C4`,
+# Try other notes:
+# sp.play("lead", "C5", duration=1.0)
+# sp.play("lead", "C4", duration=1.0)
+# sp.play("lead", 440, duration=1.0)  # Using frequency`,
 
-    chord: `import sprechstimme
+    chord: `import sprechstimme as sp
 
-# Play multiple frequencies (C major chord)
-# C4 = 261.63 Hz, E4 = 329.63 Hz, G4 = 392.00 Hz
-sprechstimme.play(261.63, duration=2.0)
-sprechstimme.play(329.63, duration=2.0)
-sprechstimme.play(392.00, duration=2.0)
+# Play a C major chord
+# Notes can be specified as note names or MIDI numbers
+# C4, E4, G4 as a chord
+sp.play("lead", ["C4", "E4", "G4"], duration=2.0)
 
 print("Playing C major chord!")`,
 
-    melody: `import sprechstimme
+    melody: `import sprechstimme as sp
 
 # Play a simple melody (C major scale)
-# Each call generates a separate audio file
-notes = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25]
-# C4, D4, E4, F4, G4, A4, B4, C5
+# Using note names for clarity
+notes = ["C4", "D4", "E4", "F4", "G4", "A4", "B4", "C5"]
 
-for freq in notes:
-    sprechstimme.play(freq, duration=0.5)
+for note in notes:
+    sp.play("lead", note, duration=0.5)
 
-print("Melody generated! (All notes will play)")`,
+print("Melody generated!")`,
 
-    synthesis: `import sprechstimme
+    synthesis: `import sprechstimme as sp
 
-# Basic sine wave synthesis
-# Generate a 440 Hz tone (A4)
-sprechstimme.play(440, duration=1.0)
+# Basic synthesis
+# Generate an A4 note (440 Hz)
+sp.play("lead", "A4", duration=1.0)
 
-print("Playing 440 Hz sine wave")
+print("Playing A4 (440 Hz)")
 
-# The real sprechstimme library generates WAV files
+# The sprechstimme library generates WAV files
 # that are played back in your browser!`,
 
-    arpeggio: `import sprechstimme
+    arpeggio: `import sprechstimme as sp
 
 # C major arpeggio
 # C4, E4, G4, C5, G4, E4, C4
-arpeggio = [261.63, 329.63, 392.00, 523.25, 392.00, 329.63, 261.63]
+arpeggio = ["C4", "E4", "G4", "C5", "G4", "E4", "C4"]
 
-for freq in arpeggio:
-    sprechstimme.play(freq, duration=0.3)
+for note in arpeggio:
+    sp.play("lead", note, duration=0.3)
 
 print("Arpeggio complete!")`,
 
-    sequence: `import sprechstimme
+    sequence: `import sprechstimme as sp
 
 # Create a musical sequence
-# Play a simple pattern
+# Play a simple pattern with varying durations
 sequence = [
-    (261.63, 0.5),  # C4
-    (329.63, 0.5),  # E4
-    (392.00, 0.5),  # G4
-    (523.25, 1.0),  # C5
+    ("C4", 0.5),
+    ("E4", 0.5),
+    ("G4", 0.5),
+    ("C5", 1.0),
 ]
 
 print("Playing sequence...")
-for freq, duration in sequence:
-    sprechstimme.play(freq, duration=duration)
+for note, duration in sequence:
+    sp.play("lead", note, duration=duration)
 
 print("Sequence complete!")`
 };
