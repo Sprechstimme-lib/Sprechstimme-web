@@ -1,5 +1,29 @@
 // Sprechstimme Playground - Pyodide Implementation
 
+// Analytics - Track page visits
+(async function trackVisit() {
+    try {
+        // Get public IP address
+        const ipResponse = await fetch('https://api.ipify.org?format=json');
+        const ipData = await ipResponse.json();
+
+        // Send to Cloudflare worker
+        await fetch('https://sprechstimme-web.sprechstimme-is-beautiful.workers.dev', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                ip: ipData.ip,
+                page: window.location.pathname,
+                timestamp: new Date().toISOString()
+            })
+        });
+    } catch (e) {
+        // Silently fail - don't impact user experience
+    }
+})();
+
 // Audio Context
 let audioContext = null;
 let masterGain = null;
