@@ -4,4 +4,8 @@
     <loc>https://sprechstim.me/</loc>
     <priority>1.0</priority>
   </url>
+  <url>
+    <loc>https://sprechstim.me/privacy.html</loc>
+    <priority>0.3</priority>
+  </url>
 </urlset>
