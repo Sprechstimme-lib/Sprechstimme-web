@@ -128,6 +128,11 @@ window.playWavFromBase64 = async function(base64Data) {
     try {
         initAudio();
 
+        // Resume audio context if suspended (required for user interaction policy)
+        if (audioContext.state === 'suspended') {
+            await audioContext.resume();
+        }
+
         // Decode base64 to ArrayBuffer
         const binaryString = atob(base64Data);
         const bytes = new Uint8Array(binaryString.length);
@@ -135,8 +140,12 @@ window.playWavFromBase64 = async function(base64Data) {
             bytes[i] = binaryString.charCodeAt(i);
         }
 
+        log(`Received ${bytes.length} bytes of audio data`, 'info');
+
         // Decode audio data
-        const audioBuffer = await audioContext.decodeAudioData(bytes.buffer);
+        const audioBuffer = await audioContext.decodeAudioData(bytes.buffer.slice(0));
+
+        log(`Decoded audio: ${audioBuffer.duration.toFixed(2)}s, ${audioBuffer.sampleRate}Hz`, 'info');
 
         // Create buffer source
         const source = audioContext.createBufferSource();
@@ -214,6 +223,7 @@ from pyodide.ffi import to_js
 import sys
 import io
 import base64
+import os
 
 # Helper function to play WAV data in browser
 def _play_wav(wav_data):
@@ -254,30 +264,32 @@ def custom_play(synth_name, notes, duration=1.0, **kwargs):
         # Calculate duration in beats (at 120 bpm, 1 beat = 0.5 seconds)
         beats = duration * 2
 
-        # Handle both single notes and lists of notes
-        if isinstance(notes, list):
-            track.add(synth_name, notes=notes, duration=beats)
-        else:
-            track.add(synth_name, notes=notes, duration=beats)
+        # Add the note(s) to the track
+        track.add(synth_name, notes=notes, duration=beats)
 
-        # Export to a BytesIO buffer
-        wav_buffer = io.BytesIO()
-        track.export(wav_buffer, format='wav')
+        # Export to a temporary file in the virtual filesystem
+        temp_file = "/tmp/sprechstimme_output.wav"
+        track.export(temp_file)
 
-        # Get the WAV data and play it
-        wav_buffer.seek(0)
-        wav_data = wav_buffer.read()
+        # Read the WAV file and play it
+        with open(temp_file, 'rb') as f:
+            wav_data = f.read()
 
-        if len(wav_data) > 0:
+        if len(wav_data) > 44:  # WAV header is 44 bytes, need actual audio data
             _play_wav(wav_data)
+        else:
+            print(f"Warning: Generated audio file is too small ({len(wav_data)} bytes)")
+
+        # Clean up
+        try:
+            os.remove(temp_file)
+        except:
+            pass
 
     except Exception as e:
         print(f"Audio playback error: {e}")
-        # Fall back to original play (won't produce audio but won't crash)
-        try:
-            _original_play(synth_name, notes, duration=duration, **kwargs)
-        except:
-            pass
+        import traceback
+        traceback.print_exc()
 
 # Replace sprechstimme functions with our wrappers
 sp.new = custom_new
