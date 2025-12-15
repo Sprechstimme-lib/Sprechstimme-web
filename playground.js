@@ -207,7 +207,7 @@ print("✓ Sprechstimme installed successfully")
 
         log('Setting up audio playback...', 'info');
 
-        // Create helper functions for WAV playback
+        // Create helper functions for WAV playback using Track API
         await pyodide.runPythonAsync(`
 import js
 from pyodide.ffi import to_js
@@ -215,72 +215,80 @@ import sys
 import io
 import base64
 
-# Helper function to save and play WAV
+# Helper function to play WAV data in browser
 def _play_wav(wav_data):
-    """Internal function to save and play WAV data"""
-    # Convert WAV bytes to base64
+    """Internal function to play WAV data via JavaScript"""
     wav_base64 = base64.b64encode(wav_data).decode('utf-8')
-    # Call JavaScript to play it
     js.playWavFromBase64(wav_base64)
 
 # Import sprechstimme after stubbing sounddevice
-import sprechstimme
+import sprechstimme as sp
 
-# Keep track of captured WAV files
-_captured_wavs = {}
+# Store original functions
+_original_new = sp.new
+_original_create = sp.create
+_original_play = sp.play
 
-# Monkey-patch open() to intercept WAV file writes
-_original_open = open
+# Track synthesizer configurations
+_synth_configs = {}
 
-def _patched_open(file, mode='r', *args, **kwargs):
-    """Intercept file writes to capture WAV data"""
-    # If opening a file for writing binary data (likely a WAV file)
-    if isinstance(file, str) and 'b' in mode and ('w' in mode or 'a' in mode):
-        # Create a BytesIO buffer instead
-        buffer = io.BytesIO()
-        buffer.name = file  # Store filename for reference
-        buffer.mode = mode
-        # Store buffer so we can retrieve it later
-        _captured_wavs[file] = buffer
-        return buffer
+def custom_new(name):
+    """Wrapper for sp.new()"""
+    _synth_configs[name] = {'wavetype': sp.waves.sine}
+    return _original_new(name)
+
+def custom_create(name, **kwargs):
+    """Wrapper for sp.create() - store config for later use"""
+    if name in _synth_configs:
+        _synth_configs[name].update(kwargs)
     else:
-        # For other operations, use original open
-        return _original_open(file, mode, *args, **kwargs)
+        _synth_configs[name] = kwargs
+    return _original_create(name, **kwargs)
 
-# Apply the monkey-patch
-import builtins
-builtins.open = _patched_open
+def custom_play(synth_name, notes, duration=1.0, **kwargs):
+    """Wrapper that uses Track API to generate and play audio"""
+    try:
+        # Create a Track for audio generation
+        track = sp.Track(bpm=120)
 
-# CRITICAL: Store reference to original play function BEFORE we replace it
-_original_sprechstimme_play = sprechstimme.play
+        # Calculate duration in beats (at 120 bpm, 1 beat = 0.5 seconds)
+        beats = duration * 2
 
-# Create wrapper function
-def custom_play(*args, **kwargs):
-    """Wrapper that captures WAV output and plays it"""
-    # Clear previous captures
-    _captured_wavs.clear()
+        # Handle both single notes and lists of notes
+        if isinstance(notes, list):
+            track.add(synth_name, notes=notes, duration=beats)
+        else:
+            track.add(synth_name, notes=notes, duration=beats)
 
-    # Call the ORIGINAL function (not the patched one)
-    result = _original_sprechstimme_play(*args, **kwargs)
+        # Export to a BytesIO buffer
+        wav_buffer = io.BytesIO()
+        track.export(wav_buffer, format='wav')
 
-    # Check if we captured any WAV data
-    for filename, buffer in _captured_wavs.items():
-        buffer.seek(0)
-        wav_data = buffer.read()
+        # Get the WAV data and play it
+        wav_buffer.seek(0)
+        wav_data = wav_buffer.read()
+
         if len(wav_data) > 0:
             _play_wav(wav_data)
-            break  # Play the first WAV we find
 
-    return result
+    except Exception as e:
+        print(f"Audio playback error: {e}")
+        # Fall back to original play (won't produce audio but won't crash)
+        try:
+            _original_play(synth_name, notes, duration=duration, **kwargs)
+        except:
+            pass
 
-# Now replace sprechstimme.play with our wrapper
-sprechstimme.play = custom_play
+# Replace sprechstimme functions with our wrappers
+sp.new = custom_new
+sp.create = custom_create
+sp.play = custom_play
 `);
 
         isPyodideReady = true;
         log('✓ Python environment ready!', 'success');
         log('✓ Sprechstimme library installed from PyPI', 'success');
-        log('Usage: sp.play("synth", note, duration=1.0)', 'info');
+        log('Usage: sp.new("synth") → sp.create("synth", wavetype=sp.waves.sine) → sp.play("synth", "C4", duration=1.0)', 'info');
         setAudioStatus('ready');
 
     } catch (error) {
@@ -351,71 +359,84 @@ const examples = {
 
 import sprechstimme as sp
 
-# Play a single tone at A4 (440 Hz) for 1 second
-# Syntax: sp.play(synth_name, notes, duration)
+# Step 1: Create a new synthesizer
+sp.new("lead")
+
+# Step 2: Configure the synthesizer with a waveform
+sp.create("lead", wavetype=sp.waves.sine)
+
+# Step 3: Play a note (A4 = MIDI 69)
 sp.play("lead", "A4", duration=1.0)
 
-# Try other notes:
-# sp.play("lead", "C5", duration=1.0)
-# sp.play("lead", "C4", duration=1.0)
-# sp.play("lead", 440, duration=1.0)  # Using frequency`,
+print("Playing A4!")`,
 
     chord: `import sprechstimme as sp
 
-# Play a C major chord
-# Notes can be specified as note names or MIDI numbers
-# C4, E4, G4 as a chord
-sp.play("lead", ["C4", "E4", "G4"], duration=2.0)
+# Create and configure a synthesizer
+sp.new("pad")
+sp.create("pad", wavetype=sp.waves.sine)
+
+# Play a C major chord (C4, E4, G4)
+sp.play("pad", ["C4", "E4", "G4"], duration=2.0)
 
 print("Playing C major chord!")`,
 
     melody: `import sprechstimme as sp
 
+# Create a synthesizer for the melody
+sp.new("lead")
+sp.create("lead", wavetype=sp.waves.sawtooth)
+
 # Play a simple melody (C major scale)
-# Using note names for clarity
 notes = ["C4", "D4", "E4", "F4", "G4", "A4", "B4", "C5"]
 
 for note in notes:
-    sp.play("lead", note, duration=0.5)
+    sp.play("lead", note, duration=0.3)
 
-print("Melody generated!")`,
+print("Melody complete!")`,
 
     synthesis: `import sprechstimme as sp
 
-# Basic synthesis
-# Generate an A4 note (440 Hz)
-sp.play("lead", "A4", duration=1.0)
+# Create a synthesizer with sawtooth wave
+sp.new("synth")
+sp.create("synth", wavetype=sp.waves.sawtooth)
 
-print("Playing A4 (440 Hz)")
+# Play A4 (440 Hz)
+sp.play("synth", "A4", duration=1.0)
 
-# The sprechstimme library generates WAV files
-# that are played back in your browser!`,
+print("Playing sawtooth wave at A4 (440 Hz)")`,
 
     arpeggio: `import sprechstimme as sp
 
-# C major arpeggio
-# C4, E4, G4, C5, G4, E4, C4
+# Create synthesizer
+sp.new("arp")
+sp.create("arp", wavetype=sp.waves.triangle)
+
+# C major arpeggio pattern
 arpeggio = ["C4", "E4", "G4", "C5", "G4", "E4", "C4"]
 
 for note in arpeggio:
-    sp.play("lead", note, duration=0.3)
+    sp.play("arp", note, duration=0.2)
 
 print("Arpeggio complete!")`,
 
     sequence: `import sprechstimme as sp
 
-# Create a musical sequence
-# Play a simple pattern with varying durations
+# Create a synthesizer
+sp.new("seq")
+sp.create("seq", wavetype=sp.waves.square)
+
+# Musical sequence with varying durations
 sequence = [
-    ("C4", 0.5),
-    ("E4", 0.5),
-    ("G4", 0.5),
-    ("C5", 1.0),
+    ("C4", 0.4),
+    ("E4", 0.4),
+    ("G4", 0.4),
+    ("C5", 0.8),
 ]
 
 print("Playing sequence...")
 for note, duration in sequence:
-    sp.play("lead", note, duration=duration)
+    sp.play("seq", note, duration=duration)
 
 print("Sequence complete!")`
 };

@@ -57,11 +57,12 @@
 
             <div class="api-reference">
                 <h4>Quick API</h4>
-                <code>sprechstimme.play(freq, duration)</code>
-                <code>sprechstimme.play(freq, duration, wave='sine')</code>
+                <code>sp.new("synth_name")</code>
+                <code>sp.create("synth_name", wavetype=sp.waves.sine)</code>
+                <code>sp.play("synth_name", "C4", duration=1.0)</code>
                 <p style="font-size: 0.85em; margin-top: 0.5em; color: #7D6E57;">
-                    freq: Frequency in Hz (e.g., 440 for A4)<br>
-                    duration: Length in seconds
+                    Wavetypes: sine, sawtooth, square, triangle<br>
+                    Notes: "C4", "A4", or MIDI numbers
                 </p>
             </div>
         </aside>
@@ -82,16 +83,21 @@
 
             <div class="editor-container">
                 <textarea id="code-editor" spellcheck="false"># Welcome to Sprechstimme Playground!
-# Real Python interpreter with the actual sprechstimme library from PyPI
+# Real Python interpreter powered by Pyodide
+# Using the actual sprechstimme library from PyPI
 
-import sprechstimme
+import sprechstimme as sp
 
-# Play a single tone at 440 Hz (A4) for 1 second
-sprechstimme.play(440, duration=1.0)
+# Step 1: Create a new synthesizer
+sp.new("lead")
 
-# Try other frequencies:
-# sprechstimme.play(523, duration=1.0)  # C5
-# sprechstimme.play(261, duration=1.0)  # C4</textarea>
+# Step 2: Configure the synthesizer with a waveform
+sp.create("lead", wavetype=sp.waves.sine)
+
+# Step 3: Play a note (A4 = MIDI 69)
+sp.play("lead", "A4", duration=1.0)
+
+print("Playing A4!")</textarea>
             </div>
 
             <div class="output-container">
