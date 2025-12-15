@@ -124,49 +124,50 @@ function stopAllAudio() {
 }
 
 // WAV file playback function (exposed to Pyodide)
-window.playWavFromBase64 = async function(base64Data) {
-    try {
-        initAudio();
+// Returns a Promise that resolves when audio playback completes
+window.playWavFromBase64 = function(base64Data) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            initAudio();
 
-        // Resume audio context if suspended (required for user interaction policy)
-        if (audioContext.state === 'suspended') {
-            await audioContext.resume();
+            // Resume audio context if suspended (required for user interaction policy)
+            if (audioContext.state === 'suspended') {
+                await audioContext.resume();
+            }
+
+            // Decode base64 to ArrayBuffer
+            const binaryString = atob(base64Data);
+            const bytes = new Uint8Array(binaryString.length);
+            for (let i = 0; i < binaryString.length; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
+
+            // Decode audio data
+            const audioBuffer = await audioContext.decodeAudioData(bytes.buffer.slice(0));
+
+            // Create buffer source
+            const source = audioContext.createBufferSource();
+            source.buffer = audioBuffer;
+
+            // Connect to master gain
+            source.connect(masterGain);
+
+            // Play
+            source.start(0);
+            setAudioStatus('playing');
+
+            // Resolve when audio ends
+            source.onended = () => {
+                setAudioStatus('ready');
+                resolve();
+            };
+
+        } catch (error) {
+            log(`Error playing audio: ${error.message}`, 'error');
+            console.error('WAV playback error:', error);
+            reject(error);
         }
-
-        // Decode base64 to ArrayBuffer
-        const binaryString = atob(base64Data);
-        const bytes = new Uint8Array(binaryString.length);
-        for (let i = 0; i < binaryString.length; i++) {
-            bytes[i] = binaryString.charCodeAt(i);
-        }
-
-        log(`Received ${bytes.length} bytes of audio data`, 'info');
-
-        // Decode audio data
-        const audioBuffer = await audioContext.decodeAudioData(bytes.buffer.slice(0));
-
-        log(`Decoded audio: ${audioBuffer.duration.toFixed(2)}s, ${audioBuffer.sampleRate}Hz`, 'info');
-
-        // Create buffer source
-        const source = audioContext.createBufferSource();
-        source.buffer = audioBuffer;
-
-        // Connect to master gain
-        source.connect(masterGain);
-
-        // Play
-        source.start(0);
-        setAudioStatus('playing');
-        log('♪ Playing audio from sprechstimme', 'success');
-
-        source.onended = () => {
-            setAudioStatus('ready');
-        };
-
-    } catch (error) {
-        log(`Error playing audio: ${error.message}`, 'error');
-        console.error('WAV playback error:', error);
-    }
+    });
 };
 
 // Initialize Pyodide
@@ -225,11 +226,12 @@ import io
 import base64
 import os
 
-# Helper function to play WAV data in browser
-def _play_wav(wav_data):
-    """Internal function to play WAV data via JavaScript"""
+# Helper function to play WAV data in browser (async - waits for completion)
+async def _play_wav(wav_data):
+    """Internal function to play WAV data via JavaScript and wait for completion"""
     wav_base64 = base64.b64encode(wav_data).decode('utf-8')
-    js.playWavFromBase64(wav_base64)
+    # Await the JavaScript promise to wait for audio to finish
+    await js.playWavFromBase64(wav_base64)
 
 # Import sprechstimme after stubbing sounddevice
 import sprechstimme as sp
@@ -255,8 +257,8 @@ def custom_create(name, **kwargs):
         _synth_configs[name] = kwargs
     return _original_create(name, **kwargs)
 
-def custom_play(synth_name, notes, duration=1.0, **kwargs):
-    """Wrapper that uses Track API to generate and play audio"""
+async def _async_play(synth_name, notes, duration=1.0, **kwargs):
+    """Async implementation that generates and plays audio, waiting for completion"""
     try:
         # Create a Track for audio generation
         track = sp.Track(bpm=120)
@@ -276,7 +278,7 @@ def custom_play(synth_name, notes, duration=1.0, **kwargs):
             wav_data = f.read()
 
         if len(wav_data) > 44:  # WAV header is 44 bytes, need actual audio data
-            _play_wav(wav_data)
+            await _play_wav(wav_data)  # Wait for audio to finish playing
         else:
             print(f"Warning: Generated audio file is too small ({len(wav_data)} bytes)")
 
@@ -290,6 +292,13 @@ def custom_play(synth_name, notes, duration=1.0, **kwargs):
         print(f"Audio playback error: {e}")
         import traceback
         traceback.print_exc()
+
+# Import run_sync to make async functions work synchronously
+from pyodide.ffi import run_sync
+
+def custom_play(synth_name, notes, duration=1.0, **kwargs):
+    """Wrapper that plays audio and waits for completion (works without await)"""
+    run_sync(_async_play(synth_name, notes, duration, **kwargs))
 
 # Replace sprechstimme functions with our wrappers
 sp.new = custom_new
